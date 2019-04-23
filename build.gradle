@@ -1,0 +1,35 @@
+plugins {
+    id 'org.springframework.boot' version '2.1.4.RELEASE'
+    id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.app.school'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+
+    runtimeOnly 'mysql:mysql-connector-java'
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.1.Final'
+
+    //HATEOAS
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.1.2.RELEASE'
+    implementation group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.25.0.RELEASE'
+
+    implementation('org.projectlombok:lombok')
+//    implementation('javax.xml.bind:jaxb-api')
+//    implementation('com.sun.xml.bind:jaxb-core')
+//    implementation('com.sun.xml.bind:jaxb-impl')
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
