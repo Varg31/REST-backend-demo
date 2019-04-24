@@ -7,8 +7,7 @@ import java.util.Objects;
 @Table(name = "students", schema = "institution")
 public class Student {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id")
+    @GeneratedValue(strategy=GenerationType.SEQUENCE)
     private long studentId;
     private String name;
     private String surname;
@@ -16,11 +15,19 @@ public class Student {
     private String dateOfBirth;
     private String gender;
 
-    @ManyToOne
-    @JoinColumn(name = "classes_class_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "classes_class_id", referencedColumnName = "class_id")
     private ClassEntity classEntity;
 
     public Student() {
+    }
+
+    public Student(String name, String surname, String middleName, String dateOfBirth, String gender) {
+        this.name = name;
+        this.surname = surname;
+        this.middleName = middleName;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
     }
 
     public long getStudentId() {

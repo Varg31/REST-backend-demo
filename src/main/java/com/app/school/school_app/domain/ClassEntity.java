@@ -9,20 +9,31 @@ import java.util.Set;
 public class ClassEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id")
+    @Column(name = "class_id")
     private long classId;
     private String title;
 
-    @OneToMany(mappedBy = "classEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "classEntity", cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<Student> students;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(name = "classes_has_disciplines",
             joinColumns = { @JoinColumn(name = "classes_class_id") },
             inverseJoinColumns = { @JoinColumn(name = "disciplines_dspl_id") })
     private Set<Discipline> disciplines;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "classes_has_teachers",
+            joinColumns = { @JoinColumn(name = "classes_class_id") },
+            inverseJoinColumns = { @JoinColumn(name = "teachers_teacher_id") })
+    private Set<Teacher> teachers;
+
     public ClassEntity() {
+    }
+
+    public ClassEntity(String title) {
+        this.title = title;
     }
 
     public long getClassId() {
@@ -53,6 +64,14 @@ public class ClassEntity {
 
     public void setDisciplines(Set<Discipline> disciplines) {
         this.disciplines = disciplines;
+    }
+
+    public Set<Teacher> getTeachers() {
+        return teachers;
+    }
+
+    public void setTeachers(Set<Teacher> teachers) {
+        this.teachers = teachers;
     }
 
     @Override
