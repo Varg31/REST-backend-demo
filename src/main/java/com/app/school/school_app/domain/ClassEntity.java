@@ -1,6 +1,7 @@
 package com.app.school.school_app.domain;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -9,18 +10,25 @@ import java.util.Set;
 public class ClassEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id")
+    @Column(name = "class_id")
     private long classId;
     private String title;
 
-    @OneToMany(mappedBy = "classEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Student> students;
+    @OneToMany(mappedBy = "classEntity", cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER, orphanRemoval = true)
+    private Set<Student> students = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(name = "classes_has_disciplines",
             joinColumns = { @JoinColumn(name = "classes_class_id") },
             inverseJoinColumns = { @JoinColumn(name = "disciplines_dspl_id") })
-    private Set<Discipline> disciplines;
+    private Set<Discipline> disciplines = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "classes_has_teachers",
+            joinColumns = { @JoinColumn(name = "classes_class_id") },
+            inverseJoinColumns = { @JoinColumn(name = "teachers_teacher_id") })
+    private Set<Teacher> teachers = new HashSet<>();
 
     public ClassEntity() {
     }
@@ -53,6 +61,14 @@ public class ClassEntity {
 
     public void setDisciplines(Set<Discipline> disciplines) {
         this.disciplines = disciplines;
+    }
+
+    public Set<Teacher> getTeachers() {
+        return teachers;
+    }
+
+    public void setTeachers(Set<Teacher> teachers) {
+        this.teachers = teachers;
     }
 
     @Override

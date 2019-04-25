@@ -130,7 +130,6 @@ public class Teacher {
                 ", dateOfBirth='" + dateOfBirth + '\'' +
                 ", gender='" + gender + '\'' +
                 ", disciplines=" + disciplines +
-                ", classes=" + classes +
                 '}';
     }
 }
