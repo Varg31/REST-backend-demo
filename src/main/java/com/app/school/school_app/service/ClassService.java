@@ -37,8 +37,20 @@ public class ClassService {
             throw new NoSuchElementException("No class with id: " + class_id);
         }
         newClass.setTitle(classEntity.getTitle());
+        newClass.setTeachers(classEntity.getTeachers());
+        newClass.setDisciplines(classEntity.getDisciplines());
+        newClass.setStudents(classEntity.getStudents());
 
         classRepo.save(newClass);
+    }
+
+    public ClassEntity getClassById(Long class_id) throws NoSuchElementException {
+        Optional<ClassEntity> entity = classRepo.findById(class_id);
+        if (!entity.isPresent()) {
+            throw new NoSuchElementException("No class with id: " + class_id);
+        }
+
+        return entity.get();
     }
 
     public void deleteClassById(Long class_id) throws NoSuchElementException {

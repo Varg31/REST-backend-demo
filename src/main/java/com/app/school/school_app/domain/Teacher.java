@@ -94,13 +94,13 @@ public class Teacher {
         this.disciplines = disciplines;
     }
 
-//    public Set<ClassEntity> getClasses() {
-//        return classes;
-//    }
-//
-//    public void setClasses(Set<ClassEntity> classes) {
-//        this.classes = classes;
-//    }
+    public Set<ClassEntity> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(Set<ClassEntity> classes) {
+        this.classes = classes;
+    }
 
     @Override
     public boolean equals(Object o) {

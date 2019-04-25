@@ -1,9 +1,12 @@
 package com.app.school.school_app.controller;
 
+import com.app.school.school_app.domain.ClassEntity;
 import com.app.school.school_app.domain.Student;
+import com.app.school.school_app.dto.ClassDTO;
 import com.app.school.school_app.dto.StudentDTO;
 import com.app.school.school_app.service.StudentService;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,9 +19,10 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-@Controller
-@RequestMapping
+@RestController
+@RequestMapping("/student")
 public class StudentController {
     private StudentService studentService;
 
@@ -26,44 +30,39 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping("/")
-    public String greetings() {
+    @GetMapping("/all")
+    public ResponseEntity<Resources<StudentDTO>> getAllStudents() {
+        List<StudentDTO> collection = studentService.findAll().stream().map(StudentDTO::new)
+                .collect(Collectors.toList());
 
-        return "greeting";
+        Resources<StudentDTO> resources = new Resources<>(collection);
+        return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
-//    @GetMapping("/student/class/{id}")
-//    public ResponseEntity<List<StudentDTO>> getStudentsByClassId(@PathVariable("id") Long class_id) {
-//        Set<Student> studentList = studentService.getStudentsByClassId(class_id);
-//        Link link = linkTo(methodOn(StudentController.class).getAllStudents()).withSelfRel();
-//
-//        return getAllStudents();
-//    }
+    @GetMapping("/class/{id}")
+    public ResponseEntity<Resources<StudentDTO>> getStudentsByClassId(@PathVariable("id") Long class_id) {
+        List<StudentDTO> studentList = studentService.getStudentsByClassId(class_id).stream().map(StudentDTO::new)
+                .collect(Collectors.toList());
 
-    @GetMapping("/student")
-    public String getAllStudents(Model model) {
-        List<Student> studentList = studentService.findAll();
-        //Link link = linkTo(methodOn(StudentController.class).getAllStudents()).withSelfRel();
-
-        //List<StudentDTO> studentsDTO = new ArrayList<>();
-//        for (Student entity: studentList) {
-//            Link selfLink = new Link(link.getHref() + "/" + entity.getStudentId()).withSelfRel();
-//            StudentDTO dto = new StudentDTO(entity, selfLink);
-//            studentsDTO.add(dto);
-//        }
-        model.addAttribute("students", studentList);
-        return "main";
+        Resources<StudentDTO> resources = new Resources<>(studentList);
+        return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
-    @PostMapping("/student")
-    public String addStudent(@RequestParam String name, String surname, String middleName, String dateOfBirth,
-                             String gender, Model model) {
-        Student student = new Student(name, surname, middleName, dateOfBirth, gender);
+    @PostMapping("/add")
+    public ResponseEntity<StudentDTO> addStudent(@RequestBody Student student) {
+        StudentDTO studentDTO = new StudentDTO(student);
         studentService.createStudent(student);
 
-        List<Student> students = studentService.findAll();
-        model.addAttribute("students", students);
+        return new ResponseEntity<>(studentDTO, HttpStatus.CREATED);
+    }
 
-        return "main";
+    @PutMapping("/all/update/{id}")
+    public ResponseEntity<StudentDTO> updateStudent(@PathVariable Long id,
+                                                    @RequestBody Student studentFromRequest) {
+        studentService.updateStudent(studentFromRequest, id);
+        Student student = studentService.getStudentById(id);
+        StudentDTO studentDTO = new StudentDTO(student);
+
+        return new ResponseEntity<>(studentDTO, HttpStatus.OK);
     }
 }

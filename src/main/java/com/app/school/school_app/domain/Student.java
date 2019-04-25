@@ -22,14 +22,6 @@ public class Student {
     public Student() {
     }
 
-    public Student(String name, String surname, String middleName, String dateOfBirth, String gender) {
-        this.name = name;
-        this.surname = surname;
-        this.middleName = middleName;
-        this.dateOfBirth = dateOfBirth;
-        this.gender = gender;
-    }
-
     public long getStudentId() {
         return studentId;
     }

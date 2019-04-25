@@ -42,6 +42,22 @@ public class Discipline {
         this.title = title;
     }
 
+    public Set<ClassEntity> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(Set<ClassEntity> classes) {
+        this.classes = classes;
+    }
+
+    public Set<Teacher> getTeachers() {
+        return teachers;
+    }
+
+    public void setTeachers(Set<Teacher> teachers) {
+        this.teachers = teachers;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

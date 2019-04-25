@@ -2,6 +2,7 @@ package com.app.school.school_app.dto;
 
 
 import com.app.school.school_app.controller.ClassController;
+import com.app.school.school_app.domain.ClassEntity;
 import com.app.school.school_app.domain.Student;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
@@ -13,10 +14,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class StudentDTO extends ResourceSupport {
     private Student student;
 
-    public StudentDTO(Student student, Link selfLink) {
+    public StudentDTO(Student student) {
         this.student = student;
-        add(selfLink);
-        add(linkTo(methodOn(ClassController.class)).withRel("classes"));
     }
 
     public Long getStudentId() { return student.getStudentId(); }
@@ -25,6 +24,7 @@ public class StudentDTO extends ResourceSupport {
     public String getMiddleName() { return student.getMiddleName(); }
     public String getDateOfBirth() { return student.getDateOfBirth(); }
     public String getGender() { return student.getGender(); }
+    public ClassEntity getClassEntity() { return student.getClassEntity(); }
 
 
 }

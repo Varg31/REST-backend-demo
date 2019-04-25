@@ -45,6 +45,7 @@ public class StudentService {
         newStudent.setMiddleName(student.getMiddleName());
         newStudent.setDateOfBirth(student.getDateOfBirth());
         newStudent.setGender(student.getGender());
+        newStudent.setClassEntity(student.getClassEntity());
 
         studentRepo.save(newStudent);
     }
