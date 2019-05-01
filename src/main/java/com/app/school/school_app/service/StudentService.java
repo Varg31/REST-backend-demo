@@ -1,20 +1,20 @@
 package com.app.school.school_app.service;
 
-import com.app.school.school_app.domain.*;
-import com.app.school.school_app.repository.*;
+import com.app.school.school_app.domain.Student;
+import com.app.school.school_app.repository.StudentRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class StudentService {
     private StudentRepo studentRepo;
-    private ClassRepo classRepo;
 
-    public StudentService(StudentRepo studentRepo, ClassRepo classRepo) {
-        this.classRepo = classRepo;
+    public StudentService(StudentRepo studentRepo) {
         this.studentRepo = studentRepo;
     }
 
@@ -37,7 +37,7 @@ public class StudentService {
     public void updateStudent(Student student, Long student_id)
             throws NoSuchElementException {
         Student newStudent = studentRepo.findById(student_id).get();
-        if(newStudent == null) {
+        if (newStudent == null) {
             throw new NoSuchElementException("No student with id: " + student_id);
         }
         newStudent.setName(student.getName());
@@ -48,15 +48,6 @@ public class StudentService {
         newStudent.setClassEntity(student.getClassEntity());
 
         studentRepo.save(newStudent);
-    }
-
-    public Set<Student> getStudentsByClassId(Long class_id) throws NoSuchElementException {
-        Optional<ClassEntity> classEntity = classRepo.findById(class_id);
-        if (!classEntity.isPresent()) {
-            throw new NoSuchElementException("No class with id: " + class_id);
-        }
-
-        return classEntity.get().getStudents();
     }
 
     public void deleteStudentById(Long student_id) throws NoSuchElementException {

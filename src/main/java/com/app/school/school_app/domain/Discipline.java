@@ -13,16 +13,10 @@ public class Discipline {
     private long dsplId;
     private String title;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "classes_has_disciplines",
-            joinColumns = { @JoinColumn(name = "disciplines_dspl_id") },
-            inverseJoinColumns = { @JoinColumn(name = "classes_class_id") })
+    @ManyToMany(mappedBy = "disciplines")
     private Set<ClassEntity> classes;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "disciplines_has_teachers",
-            joinColumns = { @JoinColumn(name = "disciplines_dspl_id") },
-            inverseJoinColumns = { @JoinColumn(name = "teachers_teacher_id") })
+    @ManyToMany(mappedBy = "disciplines")
     private Set<Teacher> teachers;
 
     public Discipline() {

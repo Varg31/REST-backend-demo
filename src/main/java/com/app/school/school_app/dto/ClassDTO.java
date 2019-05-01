@@ -5,29 +5,68 @@ import com.app.school.school_app.domain.Discipline;
 import com.app.school.school_app.domain.Student;
 import com.app.school.school_app.domain.Teacher;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sun.istack.Nullable;
 import org.springframework.hateoas.ResourceSupport;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 public class ClassDTO extends ResourceSupport {
-    private final ClassEntity entity;
+    private ClassEntity entity;
+
+    public ClassDTO() {
+    }
 
     @JsonCreator
-    public ClassDTO(ClassEntity entity) {
+    public ClassDTO(@JsonProperty ClassEntity entity) {
         this.entity = entity;
     }
 
-    public Long getClassId() { return entity.getClassId(); }
+    public ClassEntity toClass() {
+        ClassEntity classEntity = new ClassEntity();
 
-    public String getTitle() { return entity.getTitle(); }
-    public void setTitle(String title) { entity.setTitle(title);}
+        classEntity.setTitle(this.getTitle());
+        classEntity.setStudents(this.getStudents());
+        classEntity.setTeachers(this.getTeachers());
+        classEntity.setDisciplines(this.getDisciplines());
 
-    public Set<Student> getStudents() { return entity.getStudents(); }
-    public void setStudents(Set<Student> students) { entity.setStudents(students); }
+        return classEntity;
+    }
 
-    public Set<Discipline> getDisciplines() { return entity.getDisciplines(); }
-    public void setDiscipline(Set<Discipline> discipline) { entity.setDisciplines(discipline); }
+    @NotBlank
+    public String getTitle() {
+        return entity.getTitle();
+    }
 
-    public Set<Teacher> getTeachers() { return entity.getTeachers(); }
-    public void setTeachers(Set<Teacher> teachers) { entity.setTeachers(teachers); }
+    public void setTitle(String title) {
+        entity.setTitle(title);
+    }
+
+    @Nullable
+    public Set<Student> getStudents() {
+        return entity.getStudents();
+    }
+
+    public void setStudents(Set<Student> students) {
+        entity.setStudents(students);
+    }
+
+    @Nullable
+    public Set<Discipline> getDisciplines() {
+        return entity.getDisciplines();
+    }
+
+    public void setDisciplines(Set<Discipline> disciplines) {
+        entity.setDisciplines(disciplines);
+    }
+
+    @Nullable
+    public Set<Teacher> getTeachers() {
+        return entity.getTeachers();
+    }
+
+    public void setTeachers(Set<Teacher> teachers) {
+        entity.setTeachers(teachers);
+    }
 }

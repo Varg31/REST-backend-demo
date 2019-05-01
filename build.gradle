@@ -26,8 +26,18 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.1.2.RELEASE'
     implementation group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.25.0.RELEASE'
 
+    //Swagger
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+
+    //Security
+//    implementation('org.springframework.boot:spring-boot-starter-security')
+//    implementation('org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.0.0.RELEASE')
+
     implementation('org.projectlombok:lombok')
-    implementation('org.springframework.boot:spring-boot-starter-freemarker')
+
+
+//    implementation('org.springframework.boot:spring-boot-starter-freemarker')
 //    implementation('javax.xml.bind:jaxb-api')
 //    implementation('com.sun.xml.bind:jaxb-core')
 //    implementation('com.sun.xml.bind:jaxb-impl')

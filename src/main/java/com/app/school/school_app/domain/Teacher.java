@@ -23,10 +23,7 @@ public class Teacher {
             inverseJoinColumns = { @JoinColumn(name = "disciplines_dspl_id") })
     private Set<Discipline> disciplines;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "classes_has_teachers",
-            joinColumns = { @JoinColumn(name = "teachers_teacher_id") },
-            inverseJoinColumns = { @JoinColumn(name = "classes_class_id") })
+    @ManyToMany(mappedBy = "teachers")
     private Set<ClassEntity> classes;
 
     public Teacher() {
