@@ -1,8 +1,7 @@
 package com.app.school.school_app.service;
 
-import com.app.school.school_app.domain.ClassEntity;
+import com.app.school.school_app.domain.Discipline;
 import com.app.school.school_app.domain.Teacher;
-import com.app.school.school_app.repository.ClassRepo;
 import com.app.school.school_app.repository.TeacherRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +15,8 @@ import java.util.Set;
 @Transactional
 public class TeacherService {
     private TeacherRepo teacherRepo;
-    private ClassRepo classRepo;
 
-    public TeacherService(TeacherRepo teacherRepo, ClassRepo classRepo) {
-        this.classRepo = classRepo;
+    public TeacherService(TeacherRepo teacherRepo) {
         this.teacherRepo = teacherRepo;
     }
 
@@ -31,22 +28,24 @@ public class TeacherService {
         teacherRepo.save(teacher);
     }
 
-    public void updateTeacher(Teacher student, Long teacher_id)
+    public void updateTeacher(Teacher teacher, Long teacher_id)
             throws NoSuchElementException {
         Teacher newTeacher = teacherRepo.findById(teacher_id).get();
-        if(newTeacher == null) {
+        if (newTeacher == null) {
             throw new NoSuchElementException("No teacher with id: " + teacher_id);
         }
-        newTeacher.setName(student.getName());
-        newTeacher.setSurname(student.getSurname());
-        newTeacher.setMiddleName(student.getMiddleName());
-        newTeacher.setDateOfBirth(student.getDateOfBirth());
-        newTeacher.setGender(student.getGender());
+        newTeacher.setName(teacher.getName());
+        newTeacher.setSurname(teacher.getSurname());
+        newTeacher.setMiddleName(teacher.getMiddleName());
+        newTeacher.setDateOfBirth(teacher.getDateOfBirth());
+        newTeacher.setGender(teacher.getGender());
+        newTeacher.setClasses(teacher.getClasses());
+        newTeacher.setDisciplines(teacher.getDisciplines());
 
         teacherRepo.save(newTeacher);
     }
 
-    public void deleteTeacher(Long teacher_id) throws NoSuchElementException {
+    public void deleteTeacherById(Long teacher_id) throws NoSuchElementException {
         Optional<Teacher> teacher = teacherRepo.findById(teacher_id);
         if (!teacher.isPresent()) {
             throw new NoSuchElementException("No teacher with id: " + teacher_id);
@@ -54,11 +53,28 @@ public class TeacherService {
         teacherRepo.delete(teacher.get());
     }
 
-    public Set<Teacher> getTeachersByClassId(Long class_id) throws NoSuchElementException {
-        Optional<ClassEntity> classEntity = classRepo.findById(class_id);
-        if (!classEntity.isPresent()) {
-            throw new NoSuchElementException("No class with id: " + class_id);
+    public Teacher getTeacherById(Long teacher_id) throws NoSuchElementException {
+        Optional<Teacher> teacher = teacherRepo.findById(teacher_id);
+        if (!teacher.isPresent()) {
+            throw new NoSuchElementException("No teacher with id: " + teacher_id);
         }
-        return classEntity.get().getTeachers();
+        return teacher.get();
+    }
+
+    public void addDisciplineForTeacher(Discipline discipline, Long teacher_id) throws NoSuchElementException {
+        Optional<Teacher> teacher = teacherRepo.findById(teacher_id);
+        if (!teacher.isPresent()) {
+            throw new NoSuchElementException("No teacher with id: " + teacher_id);
+        }
+
+        teacher.get().getDisciplines().add(discipline);
+    }
+
+    public Set<Discipline> getDisciplinesByTeacherId(Long teacher_id) throws NoSuchElementException {
+        Optional<Teacher> teacher = teacherRepo.findById(teacher_id);
+        if (!teacher.isPresent()) {
+            throw new NoSuchElementException("No teacher with id: " + teacher_id);
+        }
+        return teacher.get().getDisciplines();
     }
 }
