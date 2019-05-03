@@ -32,7 +32,7 @@ public class ClassController {
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
-    @PostMapping("/add")
+    @PostMapping("/all")
     public ResponseEntity<ClassDTO> addClass(@RequestBody @Valid ClassDTO classDTO) {
         ClassEntity entity = classDTO.toClass();
         classService.createClass(entity);
@@ -64,9 +64,6 @@ public class ClassController {
     @DeleteMapping("all/delete/{id}")
     public ResponseEntity deleteClass(@PathVariable Long id) {
         ClassEntity entity = classService.getClassById(id);
-        for (Student student : entity.getStudents()) {
-            student.setClassEntity(null);
-        }
         classService.deleteClassById(entity.getClassId());
 
         return new ResponseEntity(HttpStatus.OK);

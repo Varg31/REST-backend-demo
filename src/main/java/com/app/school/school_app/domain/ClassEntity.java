@@ -18,13 +18,13 @@ public class ClassEntity {
             fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<Student> students = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "classes_has_disciplines",
             joinColumns = { @JoinColumn(name = "classes_class_id") },
             inverseJoinColumns = { @JoinColumn(name = "disciplines_dspl_id") })
     private Set<Discipline> disciplines = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "classes_has_teachers",
             joinColumns = { @JoinColumn(name = "classes_class_id") },
             inverseJoinColumns = { @JoinColumn(name = "teachers_teacher_id") })

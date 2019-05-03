@@ -29,7 +29,7 @@ public class DisciplineController {
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
-    @PostMapping("/add")
+    @PostMapping("/all")
     public ResponseEntity<DisciplineDTO> addDiscipline(@RequestBody DisciplineDTO disciplineDTO) {
         Discipline disciplineFromRequest = disciplineDTO.toClass();
         disciplineService.createDiscipline(disciplineFromRequest);

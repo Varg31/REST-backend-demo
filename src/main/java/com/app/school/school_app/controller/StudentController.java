@@ -29,7 +29,7 @@ public class StudentController {
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
-    @PostMapping("/add")
+    @PostMapping("/all")
     public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentDTO studentDTO) {
         Student student = studentDTO.toClass();
         studentService.createStudent(student);

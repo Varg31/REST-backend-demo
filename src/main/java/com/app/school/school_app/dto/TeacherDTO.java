@@ -6,7 +6,9 @@ import com.app.school.school_app.domain.Teacher;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.lang.Nullable;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 public class TeacherDTO extends ResourceSupport {
@@ -34,30 +36,37 @@ public class TeacherDTO extends ResourceSupport {
         return teacher;
     }
 
+    @NotBlank
     public String getName() {
         return teacher.getName();
     }
 
+    @NotBlank
     public String getSurname() {
         return teacher.getSurname();
     }
 
+    @Nullable
     public String getMiddleName() {
         return teacher.getMiddleName();
     }
 
+    @NotBlank
     public String getDateOfBirth() {
         return teacher.getDateOfBirth();
     }
 
+    @NotBlank
     public String getGender() {
         return teacher.getGender();
     }
 
+    @Nullable
     public Set<ClassEntity> getClasses() {
         return teacher.getClasses();
     }
 
+    @NotBlank
     public Set<Discipline> getDiscipline() {
         return teacher.getDisciplines();
     }

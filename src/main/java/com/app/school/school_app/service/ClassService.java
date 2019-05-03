@@ -57,10 +57,6 @@ public class ClassService {
             throw new NoSuchElementException("No class with id: " + class_id);
         }
 
-        for (Student student : classEntity.get().getStudents()) {
-            student.setClassEntity(null);
-        }
-
         classRepo.delete(classEntity.get());
     }
 
