@@ -6,6 +6,7 @@ import com.app.school.school_app.dto.TeacherDTO;
 import com.app.school.school_app.service.TeacherService;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/teacher")
+@RequestMapping(value = "/teacher", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TeacherController {
     private TeacherService teacherService;
 

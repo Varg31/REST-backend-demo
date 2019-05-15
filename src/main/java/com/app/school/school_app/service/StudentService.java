@@ -57,4 +57,13 @@ public class StudentService {
         }
         studentRepo.delete(student.get());
     }
+
+    public List<Student> loadStudentByNameAndSurname(String name, String surname) throws NoSuchElementException {
+        Optional<List<Student>> student = studentRepo.findByNameAndSurname(name, surname);
+        if (!student.isPresent()) {
+            throw new NoSuchElementException("No students with name: " + name + " and surname: " + surname);
+        }
+
+        return student.get();
+    }
 }

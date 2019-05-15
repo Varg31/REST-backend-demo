@@ -54,4 +54,13 @@ public class DisciplineService {
         }
         disciplineRepo.delete(discipline.get());
     }
+
+    public Discipline findByTitle(String title) throws NoSuchElementException {
+        Optional<Discipline> discipline = disciplineRepo.findByTitle(title);
+
+        if (!discipline.isPresent()) {
+            throw new NoSuchElementException("No discipline with title: " + title);
+        }
+        return discipline.get();
+    }
 }

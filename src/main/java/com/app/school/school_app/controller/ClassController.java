@@ -1,20 +1,25 @@
 package com.app.school.school_app.controller;
 
-import com.app.school.school_app.domain.*;
-import com.app.school.school_app.dto.*;
+import com.app.school.school_app.domain.ClassEntity;
+import com.app.school.school_app.dto.ClassDTO;
+import com.app.school.school_app.dto.DisciplineDTO;
+import com.app.school.school_app.dto.StudentDTO;
+import com.app.school.school_app.dto.TeacherDTO;
 import com.app.school.school_app.exceptions.TeacherAlreadyExists;
 import com.app.school.school_app.service.ClassService;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/class")
+@RequestMapping(value = "/class", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ClassController {
     private ClassService classService;
 
@@ -50,7 +55,7 @@ public class ClassController {
     }
 
     @PutMapping("/all/update/{id}")
-    public ResponseEntity<ClassDTO> updateClass(@PathVariable final long id,
+    public ResponseEntity<ClassDTO> updateClass(@PathVariable Long id,
                                                 @RequestBody ClassDTO classDTO) {
         ClassEntity classFromRequest = classDTO.toClass();
         classService.updateClass(classFromRequest, id);
@@ -110,6 +115,8 @@ public class ClassController {
     }
 
     @GetMapping("/{id}/teachers")
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No class with current id")
+    @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Resources<TeacherDTO>> getTeachersByClassId(@PathVariable("id") Long class_id) {
         List<TeacherDTO> dtoList = classService.getTeachersByClassId(class_id)
                 .stream().map(TeacherDTO::new)

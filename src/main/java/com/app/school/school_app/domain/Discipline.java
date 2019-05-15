@@ -27,7 +27,7 @@ public class Discipline {
     }
 
     @Basic
-    @Column(name = "title")
+    @Column(name = "title", nullable = false, unique = true)
     public String getTitle() {
         return title;
     }

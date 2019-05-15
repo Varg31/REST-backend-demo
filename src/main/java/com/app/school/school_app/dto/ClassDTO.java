@@ -7,6 +7,7 @@ import com.app.school.school_app.domain.Teacher;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.Nullable;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.hateoas.ResourceSupport;
 
 import javax.validation.constraints.NotBlank;

@@ -15,8 +15,10 @@ import java.util.Set;
 @Transactional
 public class TeacherService {
     private TeacherRepo teacherRepo;
+    private DisciplineService disciplineService;
 
-    public TeacherService(TeacherRepo teacherRepo) {
+    public TeacherService(TeacherRepo teacherRepo, DisciplineService disciplineService) {
+        this.disciplineService = disciplineService;
         this.teacherRepo = teacherRepo;
     }
 
@@ -62,6 +64,12 @@ public class TeacherService {
     }
 
     public void addDisciplineForTeacher(Discipline discipline, Long teacher_id) throws NoSuchElementException {
+        try {
+            disciplineService.getDisciplineById(discipline.getDsplId());
+        } catch (NoSuchElementException ex) {
+            disciplineService.createDiscipline(discipline);
+        }
+
         Optional<Teacher> teacher = teacherRepo.findById(teacher_id);
         if (!teacher.isPresent()) {
             throw new NoSuchElementException("No teacher with id: " + teacher_id);

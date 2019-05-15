@@ -1,8 +1,10 @@
 package com.app.school.school_app.dto;
 
 
-import com.app.school.school_app.domain.*;
-import com.fasterxml.jackson.annotation.*;
+import com.app.school.school_app.domain.ClassEntity;
+import com.app.school.school_app.domain.Student;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.lang.Nullable;
 

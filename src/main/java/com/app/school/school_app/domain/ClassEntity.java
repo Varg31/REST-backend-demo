@@ -1,6 +1,7 @@
 package com.app.school.school_app.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -11,7 +12,7 @@ public class ClassEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "class_id")
-    private long classId;
+    private Long classId;
     private String title;
 
     @OneToMany(mappedBy = "classEntity", cascade = CascadeType.ALL,
@@ -33,12 +34,12 @@ public class ClassEntity {
     public ClassEntity() {
     }
 
-    public long getClassId() {
+    public Long getClassId() {
         return classId;
     }
 
     @Basic
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     public String getTitle() {
         return title;
     }

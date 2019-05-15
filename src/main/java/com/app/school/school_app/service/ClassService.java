@@ -3,6 +3,7 @@ package com.app.school.school_app.service;
 import com.app.school.school_app.domain.*;
 import com.app.school.school_app.exceptions.TeacherAlreadyExists;
 import com.app.school.school_app.repository.ClassRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +15,11 @@ import java.util.Set;
 @Service
 @Transactional
 public class ClassService {
-    private ClassRepo classRepo;
+    private TeacherService teacherService;
+    private DisciplineService disciplineService;
+    private StudentService studentService;
 
-    public ClassService(ClassRepo classRepo) {
-        this.classRepo = classRepo;
-    }
+    private ClassRepo classRepo;
 
     public List<ClassEntity> findAll() {
         return classRepo.findAll();
@@ -30,10 +31,11 @@ public class ClassService {
 
     public void updateClass(ClassEntity classEntity, Long class_id)
             throws NoSuchElementException {
-        ClassEntity newClass = classRepo.findById(class_id).get();
-        if (newClass == null) {
+        Optional<ClassEntity> newClassOptional = classRepo.findById(class_id);
+        if (!newClassOptional.isPresent()) {
             throw new NoSuchElementException("No class with id: " + class_id);
         }
+        ClassEntity newClass = newClassOptional.get();
         newClass.setTitle(classEntity.getTitle());
         newClass.setTeachers(classEntity.getTeachers());
         newClass.setDisciplines(classEntity.getDisciplines());
@@ -61,6 +63,12 @@ public class ClassService {
     }
 
     public void addDisciplineToClass(Discipline discipline, Long class_id) throws NoSuchElementException {
+        try {
+            disciplineService.getDisciplineById(discipline.getDsplId());
+        } catch (NoSuchElementException ex) {
+            disciplineService.createDiscipline(discipline);
+        }
+
         Optional<ClassEntity> entity = classRepo.findById(class_id);
         if (!entity.isPresent()) {
             throw new NoSuchElementException("No class with id: " + class_id);
@@ -78,6 +86,12 @@ public class ClassService {
     }
 
     public void addStudentToClass(Student student, Long class_id) {
+        try {
+            studentService.getStudentById(student.getStudentId());
+        } catch (NoSuchElementException ex) {
+            studentService.createStudent(student);
+        }
+
         Optional<ClassEntity> entity = classRepo.findById(class_id);
         if (!entity.isPresent()) {
             throw new NoSuchElementException("No class with id: " + class_id);
@@ -86,7 +100,7 @@ public class ClassService {
         entity.get().getStudents().add(student);
     }
 
-    public Set<Student> getStudentsByClassId(Long class_id) throws NoSuchElementException {
+    public Set<Student> getStudentsByClassId(Long class_id) throws NoSuchElementException    {
         Optional<ClassEntity> classEntity = classRepo.findById(class_id);
         if (!classEntity.isPresent()) {
             throw new NoSuchElementException("No class with id: " + class_id);
@@ -105,6 +119,11 @@ public class ClassService {
 
     public void addTeacherToClass(Teacher teacher, Long class_id)
             throws NoSuchElementException, TeacherAlreadyExists {
+        try {
+            teacherService.getTeacherById(teacher.getTeacherId());
+        } catch (NoSuchElementException ex) {
+            teacherService.createTeacher(teacher);
+        }
         Optional<ClassEntity> entity = classRepo.findById(class_id);
         if (!entity.isPresent()) {
             throw new NoSuchElementException("No class with id: " + class_id);
@@ -122,5 +141,25 @@ public class ClassService {
                 }
             }
         }
+    }
+
+    @Autowired
+    public void setClassRepo(ClassRepo classRepo) {
+        this.classRepo = classRepo;
+    }
+
+    @Autowired
+    public void setTeacherService(TeacherService teacherService) {
+        this.teacherService = teacherService;
+    }
+
+    @Autowired
+    public void setDisciplineService(DisciplineService disciplineService) {
+        this.disciplineService = disciplineService;
+    }
+
+    @Autowired
+    public void setStudentService(StudentService studentService) {
+        this.studentService = studentService;
     }
 }

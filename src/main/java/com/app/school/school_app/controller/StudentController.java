@@ -5,6 +5,7 @@ import com.app.school.school_app.dto.StudentDTO;
 import com.app.school.school_app.service.StudentService;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/student")
+@RequestMapping(value = "/student", produces = MediaType.APPLICATION_JSON_VALUE)
 public class StudentController {
     private StudentService studentService;
 
@@ -26,6 +27,32 @@ public class StudentController {
                 .collect(Collectors.toList());
 
         Resources<StudentDTO> resources = new Resources<>(collection);
+        return new ResponseEntity<>(resources, HttpStatus.OK);
+    }
+
+    @GetMapping("/all/{id}")
+    public ResponseEntity<StudentDTO> getStudent(@PathVariable Long id) {
+        Student student = studentService.getStudentById(id);
+        StudentDTO studentDTO = new StudentDTO(student);
+
+        return new ResponseEntity<>(studentDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/find")
+    public ResponseEntity<Resources<StudentDTO>> findStudentByNameAndSurname(
+            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(required = false, defaultValue = "") String surname) {
+        List<StudentDTO> collection;
+
+        if (!name.isEmpty() && !surname.isEmpty()) {
+            collection = studentService.loadStudentByNameAndSurname(name, surname)
+                    .stream().map(StudentDTO::new)
+                    .collect(Collectors.toList());
+        } else collection = studentService.findAll().stream().map(StudentDTO::new)
+                .collect(Collectors.toList());
+
+        Resources<StudentDTO> resources = new Resources<>(collection);
+
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 

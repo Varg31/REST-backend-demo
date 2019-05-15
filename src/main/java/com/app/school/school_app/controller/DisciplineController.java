@@ -5,6 +5,7 @@ import com.app.school.school_app.dto.DisciplineDTO;
 import com.app.school.school_app.service.DisciplineService;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/discipline")
+@RequestMapping(value = "/discipline", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DisciplineController {
     private DisciplineService disciplineService;
 
@@ -27,6 +28,14 @@ public class DisciplineController {
 
         Resources<DisciplineDTO> resources = new Resources<>(collection);
         return new ResponseEntity<>(resources, HttpStatus.OK);
+    }
+
+    @GetMapping("/all/{id}")
+    public ResponseEntity<DisciplineDTO> getDiscipline(@PathVariable Long id) {
+        Discipline discipline = disciplineService.getDisciplineById(id);
+        DisciplineDTO disciplineDTO = new DisciplineDTO(discipline);
+
+        return new ResponseEntity<>(disciplineDTO, HttpStatus.OK);
     }
 
     @PostMapping("/all")
@@ -55,5 +64,14 @@ public class DisciplineController {
         disciplineService.deleteDisciplineById(entity.getDsplId());
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/find")
+    public ResponseEntity<DisciplineDTO> findDisciplineByTitle(@RequestParam String title) {
+        Discipline discipline = disciplineService.findByTitle(title);
+
+        DisciplineDTO disciplineDTO = new DisciplineDTO(discipline);
+
+        return new ResponseEntity<>(disciplineDTO, HttpStatus.OK);
     }
 }

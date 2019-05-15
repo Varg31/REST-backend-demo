@@ -8,7 +8,7 @@ import javax.management.openmbean.OpenDataException;
 import java.util.Optional;
 
 @Repository
-public interface UserDetailsRepo extends JpaRepository<User, String> {
+public interface UserDetailsRepo extends JpaRepository<User, Long > {
     Optional<User> findByUsername(String username);
 
     Optional<User> findByActivationCode(String code);
