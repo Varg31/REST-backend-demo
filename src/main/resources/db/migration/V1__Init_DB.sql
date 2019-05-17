@@ -68,11 +68,11 @@ create table usr
 (
     user_id int8 not null,
     activation_code         varchar(1024),
-    email                   varchar(255),
+    email                   varchar(1024) not null,
     enabled                 boolean not null,
     last_visit              timestamp,
-    password                varchar(255) not null,
-    username                varchar(255) not null,
+    password                varchar(1024) not null,
+    username                varchar(1024) not null,
     primary key (user_id)
 );
 

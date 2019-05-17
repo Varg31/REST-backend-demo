@@ -25,7 +25,7 @@ public class ClassEntity {
             inverseJoinColumns = { @JoinColumn(name = "disciplines_dspl_id") })
     private Set<Discipline> disciplines = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "classes_has_teachers",
             joinColumns = { @JoinColumn(name = "classes_class_id") },
             inverseJoinColumns = { @JoinColumn(name = "teachers_teacher_id") })

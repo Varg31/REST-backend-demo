@@ -25,7 +25,7 @@ public class User implements UserDetails {
     private String password;
 
     @Email(message = "Email is incorrect")
-    @NotBlank(message = "Email can`t be empty")
+    //@NotBlank(message = "Email can`t be empty")
     private String email;
     private String activationCode;
 

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -49,7 +48,10 @@ public class ClassController {
     @GetMapping("/all/{id}")
     public ResponseEntity<ClassDTO> getClass(@PathVariable Long id) {
         ClassEntity entity = classService.getClassById(id);
+
+
         ClassDTO classDTO = new ClassDTO(entity);
+        //Sentry.capture("Taken the class with id: " + id);
 
         return new ResponseEntity<>(classDTO, HttpStatus.OK);
     }
@@ -115,8 +117,6 @@ public class ClassController {
     }
 
     @GetMapping("/{id}/teachers")
-    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No class with current id")
-    @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Resources<TeacherDTO>> getTeachersByClassId(@PathVariable("id") Long class_id) {
         List<TeacherDTO> dtoList = classService.getTeachersByClassId(class_id)
                 .stream().map(TeacherDTO::new)

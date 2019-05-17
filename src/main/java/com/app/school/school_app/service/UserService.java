@@ -1,11 +1,15 @@
 package com.app.school.school_app.service;
 
+import com.app.school.school_app.config.PasswordEncodingConfig;
 import com.app.school.school_app.domain.Role;
 import com.app.school.school_app.domain.User;
 import com.app.school.school_app.exceptions.UserAlreadyExists;
 import com.app.school.school_app.repository.UserDetailsRepo;
 import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.Transient;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,12 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService, ApplicationListener<AuthenticationSuccessEvent> {
 
     private UserDetailsRepo userRepo;
     private PasswordEncoder passwordEncoder;
@@ -65,7 +70,7 @@ public class UserService implements UserDetailsService {
         user.setEnabled(true);
         user.setAuthorities(Collections.singleton(Role.USER));
         user.setActivationCode(UUID.randomUUID().toString());
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // for testing
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepo.save(user);
 
@@ -128,5 +133,13 @@ public class UserService implements UserDetailsService {
         if (isEmailChanged) {
             sendMessage(user);
         }
+    }
+
+    @Override
+    public void onApplicationEvent(AuthenticationSuccessEvent event) {
+        String username = ((UserDetails)event.getAuthentication().getPrincipal()).getUsername();
+        User user = this.userRepo.findByUsername(username).get();
+        user.setLastVisit(LocalDateTime.now());
+
     }
 }

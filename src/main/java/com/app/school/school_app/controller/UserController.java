@@ -3,6 +3,8 @@ package com.app.school.school_app.controller;
 import com.app.school.school_app.domain.User;
 import com.app.school.school_app.dto.UserDetailsDTO;
 import com.app.school.school_app.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -10,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,6 +22,9 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
+
+    Logger log = LoggerFactory.getLogger(UserController.class);
+
     private UserService userService;
 
     public UserController(UserService userService) {
@@ -38,18 +42,20 @@ public class UserController {
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
-    @DeleteMapping("{username}")
+    @DeleteMapping("/{username}")
     public ResponseEntity deleteUser(@PathVariable String username) {
         User user = (User) userService.loadUserByUsername(username);
         userService.deleteUserByUsername(user.getUsername());
 
-        return new ResponseEntity(HttpStatus.OK);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("/user"));
+        return new ResponseEntity(headers, HttpStatus.OK);
     }
 
     @GetMapping("/edit/{username}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UserDetailsDTO> userEditForm(@PathVariable String username) {
-        User editableUser = (User)userService.loadUserByUsername(username);
+        User editableUser = (User) userService.loadUserByUsername(username);
         UserDetailsDTO userDTO = new UserDetailsDTO(editableUser);
 
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
@@ -83,6 +89,7 @@ public class UserController {
             @RequestParam String email
     ) {
         userService.updateProfile(user, password, email);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("user/profile"));
 

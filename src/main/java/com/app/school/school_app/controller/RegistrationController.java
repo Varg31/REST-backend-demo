@@ -43,34 +43,34 @@ public class RegistrationController {
 
 
     @PostMapping(value = "/registration")
-    public ResponseEntity<UserDetailsDTO> addUser(@RequestBody @Valid UserDetailsDTO userDTO,
+    public ResponseEntity<MessageDTO> addUser(@RequestBody @Valid UserDetailsDTO userDTO,
                                                   @RequestParam("password2") String passwordConfirm,
                                                   @RequestParam("g-recaptcha-response") String captchaResponse)
-            throws UserAlreadyExists, PasswordConfirmationException {
+            throws UserAlreadyExists {
         String url = String.format(CAPTCHA_URL, secret, captchaResponse);
         CaptchaResponseDTO responseDTO = restTemplate.postForObject(url, Collections.emptyList(),
                 CaptchaResponseDTO.class);
 
         if (!responseDTO.isSuccess()) {
-
+            return new ResponseEntity<>(new MessageDTO("Fill captcha!"), HttpStatus.BAD_REQUEST);
         }
 
         boolean isConfirmEmpty = StringUtils.isEmpty(passwordConfirm);
 
         if (isConfirmEmpty) {
-            throw new PasswordConfirmationException("password confirmation can`t be empty");
+            return new ResponseEntity<>(new MessageDTO("Password confirmation can`t be empty"),
+                    HttpStatus.BAD_REQUEST);
         }
 
         User user = userDTO.toClass();
         userService.addUser(user);
 
         if (user.getPassword() != null && !user.getPassword().equals(passwordConfirm)) {
-            throw new PasswordConfirmationException("Passwords can`t be different");
+            return new ResponseEntity<>(new MessageDTO("Passwords can`t be different"), HttpStatus.BAD_REQUEST);
         }
 
-        UserDetailsDTO userDetailsDTO = new UserDetailsDTO(user);
-
-        return new ResponseEntity<>(userDetailsDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(new MessageDTO("Created user with id: " + user.getId() +
+                " and username: " + user.getUsername()), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/activate/{code}")
