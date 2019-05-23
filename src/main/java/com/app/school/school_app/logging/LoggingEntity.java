@@ -14,7 +14,7 @@ public class LoggingEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String method;
-    @Column(length = 1024)
+    @Column(length = 512)
     private String message;
     private LocalDateTime dateTime;
 

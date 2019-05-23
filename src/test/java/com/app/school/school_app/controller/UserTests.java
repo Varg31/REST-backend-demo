@@ -1,6 +1,6 @@
 package com.app.school.school_app.controller;
 
-import com.app.school.school_app.config.WebMvcConfig;
+import com.app.school.school_app.security.WebSecurityConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = WebMvcConfig.class)
+@ContextConfiguration(classes = WebSecurityConfig.class)
 public class UserTests {
 
     @Autowired

@@ -22,24 +22,21 @@ public class DisciplineService {
         return disciplineRepo.findAll();
     }
 
-    public Discipline getDisciplineById(Long discipline_id) throws NoSuchElementException {
-        Optional<Discipline> student = disciplineRepo.findById(discipline_id);
-        if (!student.isPresent()) {
-            throw new NoSuchElementException("No discipline with id: " + discipline_id);
-        }
-        return student.get();
+    public Discipline getDisciplineById(Long disciplineId) throws NoSuchElementException {
+        Discipline student = disciplineRepo.findById(disciplineId).orElseThrow(() ->
+                new NoSuchElementException("No discipline with id: " + disciplineId));
+
+        return student;
     }
 
     public void createDiscipline(Discipline discipline) {
         disciplineRepo.save(discipline);
     }
 
-    public void updateDiscipline(Discipline discipline, Long discipline_id)
-            throws NoSuchElementException {
-        Discipline newDiscipline = disciplineRepo.findById(discipline_id).get();
-        if (newDiscipline == null) {
-            throw new NoSuchElementException("No discipline with id: " + discipline_id);
-        }
+    public void updateDiscipline(Discipline discipline, Long disciplineId) throws NoSuchElementException {
+        Discipline newDiscipline = disciplineRepo.findById(disciplineId).orElseThrow(() ->
+                new NoSuchElementException("No discipline with id: " + disciplineId));
+
         newDiscipline.setTitle(discipline.getTitle());
         newDiscipline.setTeachers(discipline.getTeachers());
         newDiscipline.setClasses(discipline.getClasses());
@@ -47,20 +44,17 @@ public class DisciplineService {
         disciplineRepo.save(newDiscipline);
     }
 
-    public void deleteDisciplineById(Long discipline_id) throws NoSuchElementException {
-        Optional<Discipline> discipline = disciplineRepo.findById(discipline_id);
-        if (!discipline.isPresent()) {
-            throw new NoSuchElementException("No discipline with id: " + discipline_id);
-        }
-        disciplineRepo.delete(discipline.get());
+    public void deleteDisciplineById(Long disciplineId) throws NoSuchElementException {
+        Discipline discipline = disciplineRepo.findById(disciplineId).orElseThrow(() ->
+                new NoSuchElementException("No discipline with id: " + disciplineId));
+
+        disciplineRepo.delete(discipline);
     }
 
     public Discipline findByTitle(String title) throws NoSuchElementException {
-        Optional<Discipline> discipline = disciplineRepo.findByTitle(title);
+        Discipline discipline = disciplineRepo.findByTitle(title).orElseThrow(() ->
+                new NoSuchElementException("No discipline with title: " + title));
 
-        if (!discipline.isPresent()) {
-            throw new NoSuchElementException("No discipline with title: " + title);
-        }
-        return discipline.get();
+        return discipline;
     }
 }

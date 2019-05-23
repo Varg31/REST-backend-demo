@@ -22,12 +22,11 @@ public class StudentController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Resources<StudentDTO>> getAllStudents() {
+    public ResponseEntity<?> getAllStudents() {
         List<StudentDTO> collection = studentService.findAll().stream().map(StudentDTO::new)
                 .collect(Collectors.toList());
 
-        Resources<StudentDTO> resources = new Resources<>(collection);
-        return new ResponseEntity<>(resources, HttpStatus.OK);
+        return new ResponseEntity<>(collection, HttpStatus.OK);
     }
 
     @GetMapping("/all/{id}")
@@ -65,7 +64,7 @@ public class StudentController {
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
-    @PutMapping("/all/update/{id}")
+    @PutMapping("/all/{id}")
     public ResponseEntity<StudentDTO> updateStudent(@PathVariable Long id,
                                                     @RequestBody StudentDTO studentDTO) {
         Student studentFromRequest = studentDTO.toClass();
@@ -76,7 +75,7 @@ public class StudentController {
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping("all/delete/{id}")
+    @DeleteMapping("all/{id}")
     public ResponseEntity deleteStudent(@PathVariable Long id) {
         Student entity = studentService.getStudentById(id);
         studentService.deleteStudentById(entity.getStudentId());

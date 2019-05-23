@@ -27,13 +27,11 @@ public class ClassController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Resources<ClassDTO>> showAll() {
+    public ResponseEntity<?> showAll() {
         List<ClassDTO> collection = classService.findAll().stream().map(ClassDTO::new)
                 .collect(Collectors.toList());
 
-        Resources<ClassDTO> resources = new Resources<>(collection);
-
-        return new ResponseEntity<>(resources, HttpStatus.OK);
+        return new ResponseEntity<>(collection, HttpStatus.OK);
     }
 
     @PostMapping("/all")
@@ -56,7 +54,7 @@ public class ClassController {
         return new ResponseEntity<>(classDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/all/update/{id}")
+    @PutMapping("/all/{id}")
     public ResponseEntity<ClassDTO> updateClass(@PathVariable Long id,
                                                 @RequestBody ClassDTO classDTO) {
         ClassEntity classFromRequest = classDTO.toClass();
@@ -68,7 +66,7 @@ public class ClassController {
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping("all/delete/{id}")
+    @DeleteMapping("all/{id}")
     public ResponseEntity deleteClass(@PathVariable Long id) {
         ClassEntity entity = classService.getClassById(id);
         classService.deleteClassById(entity.getClassId());
@@ -99,17 +97,17 @@ public class ClassController {
 
     @PutMapping("/{id}/students/add")
     public ResponseEntity<ClassDTO> addStudentToClass(@RequestBody StudentDTO studentDTO,
-                                                      @PathVariable("id") Long class_id) {
-        classService.addStudentToClass(studentDTO.toClass(), class_id);
-        ClassEntity classEntity = classService.getClassById(class_id);
+                                                      @PathVariable("id") Long classId) {
+        classService.addStudentToClass(studentDTO.toClass(), classId);
+        ClassEntity classEntity = classService.getClassById(classId);
         ClassDTO classDTO = new ClassDTO(classEntity);
 
         return new ResponseEntity<>(classDTO, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/students")
-    public ResponseEntity<Resources<StudentDTO>> getStudentsByClassId(@PathVariable("id") Long class_id) {
-        List<StudentDTO> studentList = classService.getStudentsByClassId(class_id).stream().map(StudentDTO::new)
+    public ResponseEntity<Resources<StudentDTO>> getStudentsByClassId(@PathVariable("id") Long classId) {
+        List<StudentDTO> studentList = classService.getStudentsByClassId(classId).stream().map(StudentDTO::new)
                 .collect(Collectors.toList());
 
         Resources<StudentDTO> resources = new Resources<>(studentList);
@@ -137,6 +135,6 @@ public class ClassController {
         ClassEntity classEntity = classService.getClassById(class_id);
         ClassDTO classDTO = new ClassDTO(classEntity);
 
-        return new ResponseEntity<>(classDTO, HttpStatus.OK);
+        return ResponseEntity.ok(classDTO);
     }
 }

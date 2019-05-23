@@ -6,9 +6,8 @@ import com.app.school.school_app.domain.Student;
 import com.app.school.school_app.domain.Teacher;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sun.istack.Nullable;
-import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
@@ -35,7 +34,7 @@ public class ClassDTO extends ResourceSupport {
         return classEntity;
     }
 
-    @NotBlank
+    @NotBlank(message = "Class title can`t be empty")
     public String getTitle() {
         return entity.getTitle();
     }

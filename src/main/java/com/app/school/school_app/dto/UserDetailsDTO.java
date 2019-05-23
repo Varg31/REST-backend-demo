@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -17,9 +18,11 @@ import java.util.Set;
 @Data
 public class UserDetailsDTO extends ResourceSupport {
 
-    @NotBlank
+    @NotBlank(message = "Username can`t be blank")
     private String username;
-    @NotBlank
+
+    @NotBlank(message = "Password can`t be blank")
+    @Size(min = 4, max = 64, message = "Password must be between 4 and 64 characters")
     private String password;
     private String activationCode;
 
@@ -28,10 +31,12 @@ public class UserDetailsDTO extends ResourceSupport {
     private boolean credentialsNonExpired;
     private boolean enabled;
 
-    @Email
-    @NotBlank
+    @Email(message  = "Email not valid")
+    @NotBlank(message = "Email can`y be blank")
     private String email;
     private LocalDateTime lastVisit;
+
+    @NotBlank(message = "Authorities must be present")
     private Set<GrantedAuthority> authorities;
 
     public UserDetailsDTO() {

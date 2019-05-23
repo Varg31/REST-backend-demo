@@ -4,7 +4,6 @@ import com.app.school.school_app.domain.User;
 import com.app.school.school_app.dto.CaptchaResponseDTO;
 import com.app.school.school_app.dto.MessageDTO;
 import com.app.school.school_app.dto.UserDetailsDTO;
-import com.app.school.school_app.exceptions.PasswordConfirmationException;
 import com.app.school.school_app.exceptions.UserAlreadyExists;
 import com.app.school.school_app.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,8 +43,8 @@ public class RegistrationController {
 
     @PostMapping(value = "/registration")
     public ResponseEntity<MessageDTO> addUser(@RequestBody @Valid UserDetailsDTO userDTO,
-                                                  @RequestParam("password2") String passwordConfirm,
-                                                  @RequestParam("g-recaptcha-response") String captchaResponse)
+                                              @RequestParam("password2") String passwordConfirm,
+                                              @RequestParam("g-recaptcha-response") String captchaResponse)
             throws UserAlreadyExists {
         String url = String.format(CAPTCHA_URL, secret, captchaResponse);
         CaptchaResponseDTO responseDTO = restTemplate.postForObject(url, Collections.emptyList(),

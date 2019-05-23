@@ -22,12 +22,11 @@ public class DisciplineController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Resources<DisciplineDTO>> getAllDisciplines() {
+    public ResponseEntity<?> getAllDisciplines() {
         List<DisciplineDTO> collection = disciplineService.findAll().stream().map(DisciplineDTO::new)
                 .collect(Collectors.toList());
 
-        Resources<DisciplineDTO> resources = new Resources<>(collection);
-        return new ResponseEntity<>(resources, HttpStatus.OK);
+        return new ResponseEntity<>(collection, HttpStatus.OK);
     }
 
     @GetMapping("/all/{id}")
@@ -47,7 +46,7 @@ public class DisciplineController {
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
-    @PutMapping("/all/update/{id}")
+    @PutMapping("/all/{id}")
     public ResponseEntity<DisciplineDTO> updateDiscipline(@PathVariable Long id,
                                                           @RequestBody DisciplineDTO disciplineDTO) {
         Discipline disciplineFromRequest = disciplineDTO.toClass();
@@ -58,7 +57,7 @@ public class DisciplineController {
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping("all/delete/{id}")
+    @DeleteMapping("all/{id}")
     public ResponseEntity deleteTeacher(@PathVariable Long id) {
         Discipline entity = disciplineService.getDisciplineById(id);
         disciplineService.deleteDisciplineById(entity.getDsplId());

@@ -35,11 +35,11 @@ public class StudentDTO extends ResourceSupport {
         return student;
     }
 
-    @NotBlank
+    @NotBlank(message = "Student name can`t be empty")
     public String getName() { return student.getName(); }
     public void setName(String name) { student.setName(name);}
 
-    @NotBlank
+    @NotBlank(message = "Student surname can`t be empty")
     public String getSurname() { return student.getSurname(); }
     public void setSurname(String surname) { student.setSurname(surname);}
 
@@ -47,11 +47,11 @@ public class StudentDTO extends ResourceSupport {
     public String getMiddleName() { return student.getMiddleName(); }
     public void setMiddleName(String middleName) { student.setMiddleName(middleName);}
 
-    @NotBlank
+    @NotBlank(message = "Student date of birth can`t be empty")
     public String getDateOfBirth() { return student.getDateOfBirth(); }
     public void setDateOfBirth(String dateOfBirth) { student.setDateOfBirth(dateOfBirth);}
 
-    @NotBlank
+    @NotBlank(message = "Student gender can`t be empty")
     public String getGender() { return student.getGender(); }
     public void setGender(String gender) { student.setGender(gender);}
 

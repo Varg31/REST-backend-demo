@@ -24,13 +24,11 @@ public class TeacherController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Resources<TeacherDTO>> showAll() {
+    public ResponseEntity<?> showAll() {
         List<TeacherDTO> collection = teacherService.findAll().stream().map(TeacherDTO::new)
                 .collect(Collectors.toList());
 
-        Resources<TeacherDTO> resources = new Resources<>(collection);
-
-        return new ResponseEntity<>(resources, HttpStatus.OK);
+        return new ResponseEntity<>(collection, HttpStatus.OK);
     }
 
     @PostMapping("/all")
@@ -50,9 +48,9 @@ public class TeacherController {
         return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/all/update/{id}")
-    public ResponseEntity<TeacherDTO> updateTeacher(@PathVariable final long id,
-                                                @RequestBody @Valid TeacherDTO teacherDTO) {
+    @PutMapping("/all/{id}")
+    public ResponseEntity<TeacherDTO> updateTeacher(@PathVariable Long id,
+                                                    @RequestBody @Valid TeacherDTO teacherDTO) {
         Teacher teacherFromRequest = teacherDTO.toClass();
         teacherService.updateTeacher(teacherFromRequest, id);
 
@@ -62,17 +60,17 @@ public class TeacherController {
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping("all/delete/{id}")
+    @DeleteMapping("all/{id}")
     public ResponseEntity deleteTeacher(@PathVariable Long id) {
         Teacher entity = teacherService.getTeacherById(id);
         teacherService.deleteTeacherById(entity.getTeacherId());
 
-        return new ResponseEntity(HttpStatus.OK);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @PutMapping("/{id}/disciplines/add")
     public ResponseEntity<TeacherDTO> addDisciplineForTeacher(@RequestBody @Valid DisciplineDTO disciplineDTO,
-                                                         @PathVariable("id") Long class_id) {
+                                                              @PathVariable("id") Long class_id) {
         teacherService.addDisciplineForTeacher(disciplineDTO.toClass(), class_id);
         Teacher teacher = teacherService.getTeacherById(class_id);
 

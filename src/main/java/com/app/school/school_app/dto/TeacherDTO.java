@@ -36,12 +36,12 @@ public class TeacherDTO extends ResourceSupport {
         return teacher;
     }
 
-    @NotBlank
+    @NotBlank(message = "Teacher name can`t be empty")
     public String getName() {
         return teacher.getName();
     }
 
-    @NotBlank
+    @NotBlank(message = "Teacher surname can`t be empty")
     public String getSurname() {
         return teacher.getSurname();
     }
@@ -51,12 +51,12 @@ public class TeacherDTO extends ResourceSupport {
         return teacher.getMiddleName();
     }
 
-    @NotBlank
+    @NotBlank(message = "Teacher date of birth can`t be empty")
     public String getDateOfBirth() {
         return teacher.getDateOfBirth();
     }
 
-    @NotBlank
+    @NotBlank(message = "Teacher gender can`t be empty")
     public String getGender() {
         return teacher.getGender();
     }
@@ -66,7 +66,7 @@ public class TeacherDTO extends ResourceSupport {
         return teacher.getClasses();
     }
 
-    @NotBlank
+    @NotBlank(message = "Teacher disciplines list can`t be empty")
     public Set<Discipline> getDiscipline() {
         return teacher.getDisciplines();
     }

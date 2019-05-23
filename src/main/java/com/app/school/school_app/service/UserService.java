@@ -1,17 +1,12 @@
 package com.app.school.school_app.service;
 
-import com.app.school.school_app.config.PasswordEncodingConfig;
 import com.app.school.school_app.domain.Role;
 import com.app.school.school_app.domain.User;
 import com.app.school.school_app.exceptions.UserAlreadyExists;
 import com.app.school.school_app.repository.UserDetailsRepo;
-import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.Transient;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,10 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -53,11 +46,10 @@ public class UserService implements UserDetailsService, ApplicationListener<Auth
     }
 
     public void deleteUserByUsername(String username) throws NoSuchElementException {
-        Optional<User> user = userRepo.findByUsername(username);
-        if (!user.isPresent())
-            throw new NoSuchElementException("No user with username: " + username);
+        User user = userRepo.findByUsername(username).orElseThrow(() ->
+                new NoSuchElementException("No user with username: " + username));
 
-        userRepo.delete(user.get());
+        userRepo.delete(user);
     }
 
     public void addUser(User user) throws UserAlreadyExists {
@@ -76,6 +68,7 @@ public class UserService implements UserDetailsService, ApplicationListener<Auth
 
         sendMessage(user);
     }
+
     public boolean activateUser(String code) {
         Optional<User> user = userRepo.findByActivationCode(code);
 
@@ -91,7 +84,7 @@ public class UserService implements UserDetailsService, ApplicationListener<Auth
 
     private void sendMessage(User user) {
         if (!StringUtils.isEmpty(user.getEmail())) {
-            String message = String.format("Hello, %s! \n" + "Welcome to Sweater. " +
+            String message = String.format("Hello, %s! \n" + "Welcome to School . " +
                             "Please, visit next link to activate your account: %s%s",
                     user.getUsername(), activationDomain, user.getActivationCode());
 
@@ -99,22 +92,20 @@ public class UserService implements UserDetailsService, ApplicationListener<Auth
         }
     }
 
-    public void saveUser(User user, String username) throws NoSuchElementException {
-        Optional<User> oldUser = userRepo.findByUsername(username);
-        if (!oldUser.isPresent()) {
-            throw new NoSuchElementException("No user with name: " + username + " for edit.");
-        }
-        oldUser.get().setUsername(user.getUsername());
-        oldUser.get().setAuthorities(user.getAuthorities());
+    public Long saveUser(User user, String username) throws NoSuchElementException {
+        User oldUser = userRepo.findByUsername(username).orElseThrow(() ->
+                new NoSuchElementException("No user with name: " + username + " for edit."));
 
-        userRepo.save(user);
+        oldUser.setUsername(user.getUsername());
+        oldUser.setAuthorities(user.getAuthorities());
+
+        return userRepo.save(user).getId();
     }
 
     public void updateProfile(User user, String password, String email) {
         String userEmail = user.getEmail();
 
-        boolean isEmailChanged = (email != null && !email.equals(userEmail)) ||
-                (userEmail != null && !userEmail.equals(email));
+        boolean isEmailChanged = !email.equals(userEmail) || !userEmail.equals(email);
 
         if (isEmailChanged) {
             user.setEmail(email);
@@ -137,9 +128,8 @@ public class UserService implements UserDetailsService, ApplicationListener<Auth
 
     @Override
     public void onApplicationEvent(AuthenticationSuccessEvent event) {
-        String username = ((UserDetails)event.getAuthentication().getPrincipal()).getUsername();
+        String username = ((UserDetails) event.getAuthentication().getPrincipal()).getUsername();
         User user = this.userRepo.findByUsername(username).get();
         user.setLastVisit(LocalDateTime.now());
-
     }
 }

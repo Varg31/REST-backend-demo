@@ -3,9 +3,6 @@ package com.app.school.school_app.controller;
 import com.app.school.school_app.domain.User;
 import com.app.school.school_app.dto.UserDetailsDTO;
 import com.app.school.school_app.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,8 +20,6 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
 
-    Logger log = LoggerFactory.getLogger(UserController.class);
-
     private UserService userService;
 
     public UserController(UserService userService) {
@@ -33,13 +28,11 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Resources<UserDetailsDTO>> userList() {
+    public ResponseEntity<?> userList() {
         List<UserDetailsDTO> collection = userService.getAllUsers().stream().map(UserDetailsDTO::new)
                 .collect(Collectors.toList());
 
-        Resources<UserDetailsDTO> resources = new Resources<>(collection);
-
-        return new ResponseEntity<>(resources, HttpStatus.OK);
+        return new ResponseEntity<>(collection, HttpStatus.OK);
     }
 
     @DeleteMapping("/{username}")

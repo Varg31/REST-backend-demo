@@ -22,24 +22,21 @@ public class StudentService {
         return studentRepo.findAll();
     }
 
-    public Student getStudentById(Long student_id) throws NoSuchElementException {
-        Optional<Student> student = studentRepo.findById(student_id);
-        if (!student.isPresent()) {
-            throw new NoSuchElementException("No student with id: " + student_id);
-        }
-        return student.get();
+    public Student getStudentById(Long studentId) throws NoSuchElementException {
+        Student student = studentRepo.findById(studentId).orElseThrow(() ->
+                new NoSuchElementException("No student with id: " + studentId));
+
+        return student;
     }
 
     public void createStudent(Student student) {
         studentRepo.save(student);
     }
 
-    public void updateStudent(Student student, Long student_id)
-            throws NoSuchElementException {
-        Student newStudent = studentRepo.findById(student_id).get();
-        if (newStudent == null) {
-            throw new NoSuchElementException("No student with id: " + student_id);
-        }
+    public void updateStudent(Student student, Long studentId) throws NoSuchElementException {
+        Student newStudent = studentRepo.findById(studentId).orElseThrow(() ->
+                new NoSuchElementException("No such student for updating"));
+
         newStudent.setName(student.getName());
         newStudent.setSurname(student.getSurname());
         newStudent.setMiddleName(student.getMiddleName());
@@ -50,20 +47,17 @@ public class StudentService {
         studentRepo.save(newStudent);
     }
 
-    public void deleteStudentById(Long student_id) throws NoSuchElementException {
-        Optional<Student> student = studentRepo.findById(student_id);
-        if (!student.isPresent()) {
-            throw new NoSuchElementException("No student with id: " + student_id);
-        }
-        studentRepo.delete(student.get());
+    public void deleteStudentById(Long studentId) throws NoSuchElementException {
+        Student student = studentRepo.findById(studentId).orElseThrow(() ->
+                new NoSuchElementException("No student with id: " + studentId));
+
+        studentRepo.delete(student);
     }
 
     public List<Student> loadStudentByNameAndSurname(String name, String surname) throws NoSuchElementException {
-        Optional<List<Student>> student = studentRepo.findByNameAndSurname(name, surname);
-        if (!student.isPresent()) {
-            throw new NoSuchElementException("No students with name: " + name + " and surname: " + surname);
-        }
+        List<Student> students = studentRepo.findByNameAndSurname(name, surname).orElseThrow(() ->
+                new NoSuchElementException("No students with name: " + name + " and surname: " + surname));
 
-        return student.get();
+        return students;
     }
 }

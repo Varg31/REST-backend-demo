@@ -30,7 +30,7 @@ public class DisciplineDTO extends ResourceSupport {
         return discipline;
     }
 
-    @NotBlank
+    @NotBlank(message = "Discipline title can`t be empty")
     public String getTitle() { return discipline.getTitle(); }
     public void setTitle(String title) { discipline.setTitle(title);}
 

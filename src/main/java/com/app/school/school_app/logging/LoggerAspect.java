@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -21,6 +22,8 @@ import java.util.Arrays;
 @NoArgsConstructor
 public class LoggerAspect {
 
+    private static int messageLength = 512;
+
     @Autowired
     private LoggingRepository loggingRepository;
 
@@ -30,6 +33,11 @@ public class LoggerAspect {
     public void log(JoinPoint joinPoint) {
         String method = joinPoint.getSignature().toShortString();
         String message = Arrays.toString(joinPoint.getArgs());
+
+        if (message.length() >= messageLength) {
+            message = message.substring(0, messageLength);
+        }
+
         LocalDateTime dateTime = LocalDateTime.now();
 
         logger.info("><Executed " + method + " ><");
