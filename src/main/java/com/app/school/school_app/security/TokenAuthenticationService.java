@@ -14,7 +14,7 @@ import java.util.Date;
 @Service
 public class TokenAuthenticationService {
     static final long EXPIRATION_TIME = 864_000_000; //10 days
-    static final String SECRET = "ThisIsASecret";
+    static final String SECRET = "sEcRet_kEy";
     static final String TOKEN_PREFIX = "Bearer";
     static final String HEADER_STRING = "Authorization";
 

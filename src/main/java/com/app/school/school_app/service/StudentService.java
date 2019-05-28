@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -23,14 +22,13 @@ public class StudentService {
     }
 
     public Student getStudentById(Long studentId) throws NoSuchElementException {
-        Student student = studentRepo.findById(studentId).orElseThrow(() ->
-                new NoSuchElementException("No student with id: " + studentId));
 
-        return student;
+        return studentRepo.findById(studentId).orElseThrow(() ->
+                new NoSuchElementException("No student with id: " + studentId));
     }
 
-    public void createStudent(Student student) {
-        studentRepo.save(student);
+    public long createStudent(Student student) {
+        return studentRepo.save(student).getStudentId();
     }
 
     public void updateStudent(Student student, Long studentId) throws NoSuchElementException {
@@ -55,9 +53,8 @@ public class StudentService {
     }
 
     public List<Student> loadStudentByNameAndSurname(String name, String surname) throws NoSuchElementException {
-        List<Student> students = studentRepo.findByNameAndSurname(name, surname).orElseThrow(() ->
-                new NoSuchElementException("No students with name: " + name + " and surname: " + surname));
 
-        return students;
+        return studentRepo.findByNameAndSurname(name, surname).orElseThrow(() ->
+                new NoSuchElementException("No students with name: " + name + " and surname: " + surname));
     }
 }

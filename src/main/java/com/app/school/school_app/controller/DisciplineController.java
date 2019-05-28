@@ -1,7 +1,9 @@
 package com.app.school.school_app.controller;
 
 import com.app.school.school_app.domain.Discipline;
+import com.app.school.school_app.dto.ClassDTO;
 import com.app.school.school_app.dto.DisciplineDTO;
+import com.app.school.school_app.dto.TeacherDTO;
 import com.app.school.school_app.service.DisciplineService;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
@@ -58,7 +60,7 @@ public class DisciplineController {
     }
 
     @DeleteMapping("all/{id}")
-    public ResponseEntity deleteTeacher(@PathVariable Long id) {
+    public ResponseEntity deleteDiscipline(@PathVariable Long id) {
         Discipline entity = disciplineService.getDisciplineById(id);
         disciplineService.deleteDisciplineById(entity.getDsplId());
 
@@ -72,5 +74,23 @@ public class DisciplineController {
         DisciplineDTO disciplineDTO = new DisciplineDTO(discipline);
 
         return new ResponseEntity<>(disciplineDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/classes")
+    public ResponseEntity<?> getClassesByDisciplineId(@PathVariable Long id) {
+        List<ClassDTO> dtoList = disciplineService.getClassesByDisciplineId(id)
+                .stream().map(ClassDTO::new)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(dtoList, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/teachers")
+    public ResponseEntity<?> getTeachersByDisciplineId(@PathVariable Long id) {
+        List<TeacherDTO> dtoList = disciplineService.getTeachersByDisciplineId(id)
+                .stream().map(TeacherDTO::new)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(dtoList, HttpStatus.OK);
     }
 }

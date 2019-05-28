@@ -1,13 +1,18 @@
 package com.app.school.school_app.domain;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "disciplines", schema = "institution")
-@Data
+@EqualsAndHashCode(exclude = {"classes", "teachers"})
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Discipline {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -18,8 +23,8 @@ public class Discipline {
     private String title;
 
     @ManyToMany(mappedBy = "disciplines")
-    private Set<ClassEntity> classes;
+    private Set<ClassEntity> classes = new HashSet<>();
 
     @ManyToMany(mappedBy = "disciplines")
-    private Set<Teacher> teachers;
+    private Set<Teacher> teachers = new HashSet<>();
 }

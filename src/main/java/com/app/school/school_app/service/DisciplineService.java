@@ -1,13 +1,15 @@
 package com.app.school.school_app.service;
 
+import com.app.school.school_app.domain.ClassEntity;
 import com.app.school.school_app.domain.Discipline;
+import com.app.school.school_app.domain.Teacher;
 import com.app.school.school_app.repository.DisciplineRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -29,8 +31,8 @@ public class DisciplineService {
         return student;
     }
 
-    public void createDiscipline(Discipline discipline) {
-        disciplineRepo.save(discipline);
+    public long createDiscipline(Discipline discipline) {
+        return disciplineRepo.save(discipline).getDsplId();
     }
 
     public void updateDiscipline(Discipline discipline, Long disciplineId) throws NoSuchElementException {
@@ -56,5 +58,19 @@ public class DisciplineService {
                 new NoSuchElementException("No discipline with title: " + title));
 
         return discipline;
+    }
+
+    public Set<ClassEntity> getClassesByDisciplineId(Long disciplineId) throws NoSuchElementException {
+        Discipline discipline = disciplineRepo.findById(disciplineId).orElseThrow(() ->
+                new NoSuchElementException("No discipline with id: " + disciplineId));
+
+        return discipline.getClasses();
+    }
+
+    public Set<Teacher> getTeachersByDisciplineId(Long disciplineId) throws NoSuchElementException {
+        Discipline discipline = disciplineRepo.findById(disciplineId).orElseThrow(() ->
+                new NoSuchElementException("No discipline with id: " + disciplineId));
+
+        return discipline.getTeachers();
     }
 }

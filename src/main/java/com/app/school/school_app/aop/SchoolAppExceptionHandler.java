@@ -1,9 +1,7 @@
 package com.app.school.school_app.aop;
 
 import com.app.school.school_app.dto.MessageDTO;
-import com.app.school.school_app.exceptions.PasswordConfirmationException;
-import com.app.school.school_app.exceptions.TeacherAlreadyExists;
-import com.app.school.school_app.exceptions.UserAlreadyExists;
+import com.app.school.school_app.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -46,5 +44,19 @@ public class SchoolAppExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UsernameNotFoundException.class)
     protected ResponseEntity<MessageDTO> handleUsernameNotFoundException(Throwable ex) {
         return new ResponseEntity<>(new MessageDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = StudentAlreadyExists.class)
+    protected ResponseEntity<MessageDTO> handleStudentAlreadyExists(Throwable ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_MODIFIED)
+                .body(new MessageDTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(value = DisciplineAlreadyExists.class)
+    protected ResponseEntity<MessageDTO> handleDisciplineAlreadyExists(Throwable ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_MODIFIED)
+                .body(new MessageDTO(ex.getMessage()));
     }
 }

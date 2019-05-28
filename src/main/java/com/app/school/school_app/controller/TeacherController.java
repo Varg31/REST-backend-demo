@@ -1,6 +1,7 @@
 package com.app.school.school_app.controller;
 
 import com.app.school.school_app.domain.Teacher;
+import com.app.school.school_app.dto.ClassDTO;
 import com.app.school.school_app.dto.DisciplineDTO;
 import com.app.school.school_app.dto.TeacherDTO;
 import com.app.school.school_app.service.TeacherService;
@@ -68,11 +69,11 @@ public class TeacherController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PutMapping("/{id}/disciplines/add")
+    @PutMapping("/{id}/disciplines")
     public ResponseEntity<TeacherDTO> addDisciplineForTeacher(@RequestBody @Valid DisciplineDTO disciplineDTO,
-                                                              @PathVariable("id") Long class_id) {
-        teacherService.addDisciplineForTeacher(disciplineDTO.toClass(), class_id);
-        Teacher teacher = teacherService.getTeacherById(class_id);
+                                                              @PathVariable("id") Long classId) {
+        teacherService.addDisciplineForTeacher(disciplineDTO.toClass(), classId);
+        Teacher teacher = teacherService.getTeacherById(classId);
 
         TeacherDTO teacherDTO = new TeacherDTO(teacher);
 
@@ -80,12 +81,28 @@ public class TeacherController {
     }
 
     @GetMapping("/{id}/disciplines")
-    public ResponseEntity<Resources<DisciplineDTO>> getDisciplinesByTeacherId(@PathVariable("id") Long class_id) {
-        List<DisciplineDTO> dtoList = teacherService.getDisciplinesByTeacherId(class_id)
+    public ResponseEntity<?> getDisciplinesByTeacherId(@PathVariable("id") Long classId) {
+        List<DisciplineDTO> dtoList = teacherService.getDisciplinesByTeacherId(classId)
                 .stream().map(DisciplineDTO::new)
                 .collect(Collectors.toList());
 
-        Resources<DisciplineDTO> resources = new Resources<>(dtoList);
-        return new ResponseEntity<>(resources, HttpStatus.OK);
+        return new ResponseEntity<>(dtoList, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/disciplines/{dsplId}")
+    public ResponseEntity deleteDisciplineForTeacher(@PathVariable("id") Long teacherId,
+                                                    @PathVariable("dsplId") Long disciplineId) {
+        teacherService.removeDiscipline(teacherId, disciplineId);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/classes")
+    public ResponseEntity<?> getClassesByTeacherId(@PathVariable Long id) {
+        List<ClassDTO> dtoList = teacherService.getClassesByTeacherId(id)
+                .stream().map(ClassDTO::new)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(dtoList, HttpStatus.OK);
     }
 }

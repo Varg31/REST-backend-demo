@@ -38,7 +38,7 @@ public class StudentController {
     }
 
     @GetMapping("/find")
-    public ResponseEntity<Resources<StudentDTO>> findStudentByNameAndSurname(
+    public ResponseEntity<?> findStudentByNameAndSurname(
             @RequestParam(required = false, defaultValue = "") String name,
             @RequestParam(required = false, defaultValue = "") String surname) {
         List<StudentDTO> collection;
@@ -50,9 +50,7 @@ public class StudentController {
         } else collection = studentService.findAll().stream().map(StudentDTO::new)
                 .collect(Collectors.toList());
 
-        Resources<StudentDTO> resources = new Resources<>(collection);
-
-        return new ResponseEntity<>(resources, HttpStatus.OK);
+        return new ResponseEntity<>(collection, HttpStatus.OK);
     }
 
     @PostMapping("/all")
