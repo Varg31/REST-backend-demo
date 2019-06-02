@@ -1,6 +1,11 @@
 package com.app.school.school_app.service;
 
-import com.app.school.school_app.domain.*;
+import com.app.school.school_app.domain.ClassEntity;
+import com.app.school.school_app.domain.Discipline;
+import com.app.school.school_app.domain.Student;
+import com.app.school.school_app.domain.Teacher;
+import com.app.school.school_app.exceptions.DisciplineAlreadyExists;
+import com.app.school.school_app.exceptions.StudentAlreadyExists;
 import com.app.school.school_app.exceptions.TeacherAlreadyExists;
 import com.app.school.school_app.repository.ClassRepo;
 import org.springframework.stereotype.Service;
@@ -8,15 +13,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
 @Transactional
 public class ClassService {
     private ClassRepo classRepo;
+    private StudentService studentService;
+    private DisciplineService disciplineService;
+    private TeacherService teacherService;
 
-    public ClassService(ClassRepo classRepo) {
+    public ClassService(ClassRepo classRepo, StudentService studentService,
+                        DisciplineService disciplineService, TeacherService teacherService) {
+        this.disciplineService = disciplineService;
+        this.teacherService = teacherService;
+        this.studentService = studentService;
         this.classRepo = classRepo;
     }
 
@@ -28,12 +39,10 @@ public class ClassService {
         classRepo.save(classEntity);
     }
 
-    public void updateClass(ClassEntity classEntity, Long class_id)
-            throws NoSuchElementException {
-        ClassEntity newClass = classRepo.findById(class_id).get();
-        if (newClass == null) {
-            throw new NoSuchElementException("No class with id: " + class_id);
-        }
+    public void updateClass(ClassEntity classEntity, Long classId) throws NoSuchElementException {
+        ClassEntity newClass = classRepo.findById(classId).orElseThrow(() ->
+                new NoSuchElementException("No class with id: " + classId));
+
         newClass.setTitle(classEntity.getTitle());
         newClass.setTeachers(classEntity.getTeachers());
         newClass.setDisciplines(classEntity.getDisciplines());
@@ -42,89 +51,137 @@ public class ClassService {
         classRepo.save(newClass);
     }
 
-    public ClassEntity getClassById(Long class_id) throws NoSuchElementException {
-        Optional<ClassEntity> entity = classRepo.findById(class_id);
-        if (!entity.isPresent()) {
-            throw new NoSuchElementException("No class with id: " + class_id);
-        }
-
-        return entity.get();
+    public ClassEntity getClassById(Long classId) throws NoSuchElementException {
+        return classRepo.findById(classId).orElseThrow(() ->
+                new NoSuchElementException("No class with id: " + classId));
     }
 
-    public void deleteClassById(Long class_id) throws NoSuchElementException {
-        Optional<ClassEntity> classEntity = classRepo.findById(class_id);
-        if (!classEntity.isPresent()) {
-            throw new NoSuchElementException("No class with id: " + class_id);
-        }
+    public void deleteClassById(Long classId) throws NoSuchElementException {
+       ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
+                new NoSuchElementException("No class with id: " + classId));
 
-        for (Student student : classEntity.get().getStudents()) {
-            student.setClassEntity(null);
-        }
-
-        classRepo.delete(classEntity.get());
+        classRepo.delete(classEntity);
     }
 
-    public void addDisciplineToClass(Discipline discipline, Long class_id) throws NoSuchElementException {
-        Optional<ClassEntity> entity = classRepo.findById(class_id);
-        if (!entity.isPresent()) {
-            throw new NoSuchElementException("No class with id: " + class_id);
+    public void addDisciplineToClass(Discipline discipline, Long classId)
+            throws NoSuchElementException, DisciplineAlreadyExists {
+        ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
+                new NoSuchElementException("No class with id: " + classId));
+
+        Long disciplineId = disciplineService.createDiscipline(discipline);
+        Discipline newDiscipline = disciplineService.getDisciplineById(disciplineId);
+
+        if (classEntity.getDisciplines().contains(discipline)) {
+            throw new DisciplineAlreadyExists("Discipline with id: " + discipline.getDsplId() + " already exists");
         }
 
-        entity.get().getDisciplines().add(discipline);
+        classEntity.getDisciplines().add(newDiscipline);
+
+        newDiscipline.getClasses().add(classEntity);
+        classRepo.save(classEntity);
     }
 
-    public Set<Discipline> getDisciplinesByClassId(Long class_id) throws NoSuchElementException {
-        Optional<ClassEntity> classEntity = classRepo.findById(class_id);
-        if (!classEntity.isPresent()) {
-            throw new NoSuchElementException("No class with id: " + class_id);
+    public Set<Discipline> getDisciplinesByClassId(Long classId) throws NoSuchElementException {
+        ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
+                new NoSuchElementException("No class with id: " + classId));
+
+        return classEntity.getDisciplines();
+    }
+
+    public void removeDiscipline(Long classId, Long disciplineId) throws NoSuchElementException {
+        ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
+                new NoSuchElementException("No class with id: " + classId));
+
+        Discipline discipline = disciplineService.getDisciplineById(disciplineId);
+        if (!classEntity.getDisciplines().contains(discipline))
+            throw new NoSuchElementException("No discipline with id: " + discipline + " in class with id: " + classId);
+
+        classEntity.getDisciplines().remove(discipline);
+        discipline.getClasses().remove(classEntity);
+    }
+
+    public void addStudentToClass(Student student, Long classId)
+            throws NoSuchElementException, StudentAlreadyExists {
+        ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
+                new NoSuchElementException("No class with id: " + classId));
+        Long studentId = studentService.createStudent(student);
+        Student newStudent = studentService.getStudentById(studentId);
+
+        if (classEntity.getStudents().contains(newStudent)) {
+            throw new StudentAlreadyExists("Student with id: " + newStudent.getStudentId() + " already exists");
         }
-        return classEntity.get().getDisciplines();
+
+        student.setClassEntity(classEntity);
+
+        classEntity.getStudents().add(student);
+        classRepo.save(classEntity);
     }
 
-    public void addStudentToClass(Student student, Long class_id) {
-        Optional<ClassEntity> entity = classRepo.findById(class_id);
-        if (!entity.isPresent()) {
-            throw new NoSuchElementException("No class with id: " + class_id);
-        }
+    public Set<Student> getStudentsByClassId(Long classId) throws NoSuchElementException    {
+        ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
+                new NoSuchElementException("No class with id: " + classId));
 
-        entity.get().getStudents().add(student);
+        return classEntity.getStudents();
     }
 
-    public Set<Student> getStudentsByClassId(Long class_id) throws NoSuchElementException {
-        Optional<ClassEntity> classEntity = classRepo.findById(class_id);
-        if (!classEntity.isPresent()) {
-            throw new NoSuchElementException("No class with id: " + class_id);
-        }
+    public void removeStudent(Long classId, Long studentId) throws NoSuchElementException {
+        ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
+                new NoSuchElementException("No class with id: " + classId));
 
-        return classEntity.get().getStudents();
+        Student student = studentService.getStudentById(studentId);
+        if (!classEntity.getStudents().contains(student))
+            throw new NoSuchElementException("No student with id: " + studentId + " in class with id: " + classId);
+
+        classEntity.getStudents().remove(student);
+        student.setClassEntity(null);
     }
 
-    public Set<Teacher> getTeachersByClassId(Long class_id) throws NoSuchElementException {
-        Optional<ClassEntity> classEntity = classRepo.findById(class_id);
-        if (!classEntity.isPresent()) {
-            throw new NoSuchElementException("No class with id: " + class_id);
-        }
-        return classEntity.get().getTeachers();
+    public Set<Teacher> getTeachersByClassId(Long classId) throws NoSuchElementException {
+        ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
+                new NoSuchElementException("No class with id: " + classId));
+
+        return classEntity.getTeachers();
     }
 
-    public void addTeacherToClass(Teacher teacher, Long class_id)
+    public void addTeacherToClass(Teacher teacher, Long classId)
             throws NoSuchElementException, TeacherAlreadyExists {
-        Optional<ClassEntity> entity = classRepo.findById(class_id);
-        if (!entity.isPresent()) {
-            throw new NoSuchElementException("No class with id: " + class_id);
-        }
+        ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
+                new NoSuchElementException("No class with id: " + classId));
+        Long teacherId = teacherService.createTeacher(teacher);
+        Teacher newTeacher = teacherService.getTeacherById(teacherId);
 
-        Set<Teacher> teachers = entity.get().getTeachers();
-        Set<Discipline> disciplines = entity.get().getDisciplines();
+        Set<Teacher> teachers = classEntity.getTeachers();
+        Set<Discipline> disciplines = classEntity.getDisciplines();
 
         for (Discipline discipline: disciplines) {
             for (Teacher t: teachers) {
-                if (teacher.getDisciplines().contains(discipline) && !t.getDisciplines().contains(discipline)) {
-                    teachers.add(teacher);
+                if (newTeacher.getDisciplines().contains(discipline) && !t.getDisciplines().contains(discipline)) {
+                    teachers.add(newTeacher);
+                    newTeacher.getClasses().add(classEntity);
+
+                    classRepo.save(classEntity);
                 } else {
                     throw new TeacherAlreadyExists("There is no available disciplines for this teacher");
                 }
             }
         }
     }
+
+    public void removeTeacher(Long classId, Long teacherId) throws NoSuchElementException {
+        ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
+                new NoSuchElementException("No class with id: " + classId));
+
+        Teacher teacher = teacherService.getTeacherById(teacherId);
+        if (!classEntity.getDisciplines().contains(teacher))
+            throw new NoSuchElementException("No teacher with id: " + teacher + " in class with id: " + classId);
+
+        classEntity.getTeachers().remove(teacher);
+        teacher.getClasses().remove(classEntity);
+    }
+
+    public ClassEntity findByTitle(String title) throws NoSuchElementException{
+        return classRepo.findByTitle(title).orElseThrow(() ->
+                new NoSuchElementException("No class with such title: " + title));
+    }
+
 }
