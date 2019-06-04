@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -25,10 +26,8 @@ public class DisciplineService {
     }
 
     public Discipline getDisciplineById(Long disciplineId) throws NoSuchElementException {
-        Discipline student = disciplineRepo.findById(disciplineId).orElseThrow(() ->
+        return disciplineRepo.findById(disciplineId).orElseThrow(() ->
                 new NoSuchElementException("No discipline with id: " + disciplineId));
-
-        return student;
     }
 
     public long createDiscipline(Discipline discipline) {
@@ -40,8 +39,6 @@ public class DisciplineService {
                 new NoSuchElementException("No discipline with id: " + disciplineId));
 
         newDiscipline.setTitle(discipline.getTitle());
-        newDiscipline.setTeachers(discipline.getTeachers());
-        newDiscipline.setClasses(discipline.getClasses());
 
         disciplineRepo.save(newDiscipline);
     }
@@ -54,10 +51,8 @@ public class DisciplineService {
     }
 
     public Discipline findByTitle(String title) throws NoSuchElementException {
-        Discipline discipline = disciplineRepo.findByTitle(title).orElseThrow(() ->
+        return disciplineRepo.findByTitle(title).orElseThrow(() ->
                 new NoSuchElementException("No discipline with title: " + title));
-
-        return discipline;
     }
 
     public Set<ClassEntity> getClassesByDisciplineId(Long disciplineId) throws NoSuchElementException {
@@ -72,5 +67,17 @@ public class DisciplineService {
                 new NoSuchElementException("No discipline with id: " + disciplineId));
 
         return discipline.getTeachers();
+    }
+
+    Discipline createIfNotPresent(Discipline discipline) {
+        Optional<Discipline> newDiscipline = disciplineRepo.findByTitle(discipline.getTitle());
+        Long disciplineId;
+
+        if (!newDiscipline.isPresent()) {
+            disciplineId = this.createDiscipline(discipline);
+            newDiscipline = disciplineRepo.findById(disciplineId);
+        }
+
+        return newDiscipline.get();
     }
 }

@@ -1,14 +1,12 @@
 package com.app.school.school_app.dto;
 
 import com.app.school.school_app.controller.DisciplineController;
-import com.app.school.school_app.domain.*;
-import com.fasterxml.jackson.annotation.*;
-import org.hibernate.validator.constraints.UniqueElements;
+import com.app.school.school_app.domain.Discipline;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.ResourceSupport;
-import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
-import java.util.Set;
 
 import static org.springframework.hateoas.core.DummyInvocationUtils.methodOn;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -24,7 +22,6 @@ public class DisciplineDTO extends ResourceSupport {
         this.discipline = discipline;
 
         final long id = discipline.getDsplId();
-        //add(selfLink);
         add(linkTo(methodOn(DisciplineController.class).getClassesByDisciplineId(id)).withRel("classes"));
         add(linkTo(methodOn(DisciplineController.class).getTeachersByDisciplineId(id)).withRel("teachers"));
     }
@@ -33,8 +30,6 @@ public class DisciplineDTO extends ResourceSupport {
         Discipline discipline = new Discipline();
 
         discipline.setTitle(this.getTitle());
-//        discipline.setClasses(this.getClasses());
-//        discipline.setTeachers(this.getTeachers());
 
         return discipline;
     }
@@ -46,12 +41,4 @@ public class DisciplineDTO extends ResourceSupport {
     @NotBlank(message = "Discipline title can`t be empty")
     public String getTitle() { return discipline.getTitle(); }
     public void setTitle(String title) { discipline.setTitle(title);}
-
-//    @Nullable
-//    public Set<Teacher> getTeachers() { return discipline.getTeachers(); }
-//    public void setTeachers(Set<Teacher> teachers) { discipline.setTeachers(teachers); }
-//
-//    @Nullable
-//    public Set<ClassEntity> getClasses() { return discipline.getClasses(); }
-//    public void setClasses(Set<ClassEntity> classes) { discipline.setClasses(classes); }
 }

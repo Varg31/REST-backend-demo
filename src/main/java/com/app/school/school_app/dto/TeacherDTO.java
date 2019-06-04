@@ -1,9 +1,7 @@
 package com.app.school.school_app.dto;
 
-import com.app.school.school_app.controller.ClassController;
 import com.app.school.school_app.controller.TeacherController;
-import com.app.school.school_app.domain.ClassEntity;
-import com.app.school.school_app.domain.Discipline;
+import com.app.school.school_app.domain.Gender;
 import com.app.school.school_app.domain.Teacher;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,7 +9,7 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
-import java.util.Set;
+import javax.validation.constraints.NotNull;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -33,21 +31,20 @@ public class TeacherDTO extends ResourceSupport {
     }
 
     public Teacher toClass() {
-        Teacher teacher = new Teacher();
+        Teacher newTeacher = new Teacher();
 
-        teacher.setName(this.getName());
-        teacher.setSurname(this.getSurname());
-        teacher.setMiddleName(this.getMiddleName());
-        teacher.setDateOfBirth(this.getDateOfBirth());
-        teacher.setGender(this.getGender());
-//        teacher.setDisciplines(this.getDiscipline());
-//        teacher.setClasses(this.getClasses());
+        newTeacher.setName(getName());
+        newTeacher.setSurname(getSurname());
+        newTeacher.setMiddleName(getMiddleName());
+        newTeacher.setDateOfBirth(getDateOfBirth());
+        newTeacher.setEmploymentBookNumber(getEmploymentBookNumber());
+        newTeacher.setGender(getGender());
 
-        return teacher;
+        return newTeacher;
     }
 
     public Long getTeacherId() {
-        return this.teacher.getTeacherId();
+        return teacher.getTeacherId();
     }
 
     @NotBlank(message = "Teacher name can`t be empty")
@@ -70,20 +67,19 @@ public class TeacherDTO extends ResourceSupport {
         return teacher.getDateOfBirth();
     }
 
-    @NotBlank(message = "Teacher gender can`t be empty")
-    public String getGender() {
+    @NotNull(message = "Teacher gender can`t be empty")
+    public Gender getGender() {
         return teacher.getGender();
     }
 
-//    @Nullable
-//    public Set<ClassEntity> getClasses() {
-//        return teacher.getClasses();
-//    }
+    @NotNull(message = "Employment book number can`t be empty")
+    public Integer getEmploymentBookNumber() {
+        return teacher.getEmploymentBookNumber();
+    }
 
-//    @Nullable//@NotBlank(message = "Teacher disciplines list can`t be empty")
-//    public Set<Discipline> getDiscipline() {
-//        return teacher.getDisciplines();
-//    }
+    public void setEmploymentBookNumber(Integer number) {
+        teacher.setEmploymentBookNumber(number);
+    }
 
     public void setName(String name) {
         teacher.setName(name);
@@ -101,15 +97,7 @@ public class TeacherDTO extends ResourceSupport {
         teacher.setDateOfBirth(dateOfBirth);
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         teacher.setGender(gender);
     }
-
-//    public void setClasses(Set<ClassEntity> classes) {
-//        teacher.setClasses(classes);
-//    }
-
-//    public void setDiscipline(Set<Discipline> disciplines) {
-//        teacher.setDisciplines(disciplines);
-//    }
 }

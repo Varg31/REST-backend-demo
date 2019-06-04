@@ -7,7 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "disciplines", schema = "institution")
+@Table(name = "disciplines", schema = "institution", indexes =
+        {@Index(name = "discipline_title_index", columnList = "title")})
 @EqualsAndHashCode(exclude = {"classes", "teachers"})
 @Getter
 @Setter

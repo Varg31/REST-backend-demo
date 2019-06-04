@@ -10,6 +10,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -22,7 +23,8 @@ import java.util.Arrays;
 @NoArgsConstructor
 public class LoggerAspect {
 
-    private static int messageLength = 512;
+    @Value("${logging.message.max-size}")
+    private int messageLength;
 
     @Autowired
     private LoggingRepository loggingRepository;

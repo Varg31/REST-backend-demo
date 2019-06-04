@@ -37,21 +37,21 @@ public class StudentController {
         return new ResponseEntity<>(studentDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/find")
-    public ResponseEntity<?> findStudentByNameAndSurname(
-            @RequestParam(required = false, defaultValue = "") String name,
-            @RequestParam(required = false, defaultValue = "") String surname) {
-        List<StudentDTO> collection;
-
-        if (!name.isEmpty() && !surname.isEmpty()) {
-            collection = studentService.loadStudentByNameAndSurname(name, surname)
-                    .stream().map(StudentDTO::new)
-                    .collect(Collectors.toList());
-        } else collection = studentService.findAll().stream().map(StudentDTO::new)
-                .collect(Collectors.toList());
-
-        return new ResponseEntity<>(collection, HttpStatus.OK);
-    }
+//    @GetMapping("/find")
+//    public ResponseEntity<?> findStudentByNameAndSurname(
+//            @RequestParam(required = false, defaultValue = "") String name,
+//            @RequestParam(required = false, defaultValue = "") String surname) {
+//        List<StudentDTO> collection;
+//
+//        if (!name.isEmpty() && !surname.isEmpty()) {
+//            collection = studentService.loadStudentByNameAndSurname(name, surname)
+//                    .stream().map(StudentDTO::new)
+//                    .collect(Collectors.toList());
+//        } else collection = studentService.findAll().stream().map(StudentDTO::new)
+//                .collect(Collectors.toList());
+//
+//        return new ResponseEntity<>(collection, HttpStatus.OK);
+//    }
 
     @PostMapping("/all")
     public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentDTO studentDTO) {
@@ -79,5 +79,14 @@ public class StudentController {
         studentService.deleteStudentById(entity.getStudentId());
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/find")
+    public ResponseEntity<StudentDTO> findStudentByCardNumber(@RequestParam Integer number) {
+        Student student = studentService.findByStudentCardNumber(number);
+
+        StudentDTO resultDTO = new StudentDTO(student);
+
+        return new ResponseEntity<>(resultDTO, HttpStatus.OK);
     }
 }

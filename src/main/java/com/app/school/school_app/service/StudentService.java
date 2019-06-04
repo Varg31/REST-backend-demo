@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -39,8 +40,8 @@ public class StudentService {
         newStudent.setSurname(student.getSurname());
         newStudent.setMiddleName(student.getMiddleName());
         newStudent.setDateOfBirth(student.getDateOfBirth());
+        newStudent.setStudentCardNumber(student.getStudentCardNumber());
         newStudent.setGender(student.getGender());
-        newStudent.setClassEntity(student.getClassEntity());
 
         studentRepo.save(newStudent);
     }
@@ -56,5 +57,22 @@ public class StudentService {
 
         return studentRepo.findByNameAndSurname(name, surname).orElseThrow(() ->
                 new NoSuchElementException("No students with name: " + name + " and surname: " + surname));
+    }
+
+    public Student findByStudentCardNumber(Integer number) throws NoSuchElementException{
+        return studentRepo.findByStudentCardNumber(number).orElseThrow(() ->
+                new NoSuchElementException("No student with such card number: " + number));
+    }
+
+    Student createIfNotPresent(Student student) {
+        Optional<Student> optionalStudent = studentRepo.findByStudentCardNumber(student.getStudentCardNumber());
+        Long studentId;
+
+        if (!optionalStudent.isPresent()) {
+            studentId = this.createStudent(student);
+            optionalStudent = studentRepo.findById(studentId);
+        }
+
+        return optionalStudent.get();
     }
 }

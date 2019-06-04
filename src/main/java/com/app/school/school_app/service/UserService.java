@@ -84,8 +84,9 @@ public class UserService implements UserDetailsService, ApplicationListener<Auth
 
     private void sendMessage(User user) {
         if (!StringUtils.isEmpty(user.getEmail())) {
-            String message = String.format("Hello, %s! \n" + "Welcome to School . " +
-                            "Please, visit next link to activate your account: %s%s",
+            String message = String.format("Hello, %s! \n" + "Welcome to our school. " +
+                            "Please, visit next link to activate your account: %s%s \n" +
+                            "We hope you`ll spend your time with pleasure :)",
                     user.getUsername(), activationDomain, user.getActivationCode());
 
             mailSender.send(user.getEmail(), "Activation code", message);
@@ -105,7 +106,7 @@ public class UserService implements UserDetailsService, ApplicationListener<Auth
     public void updateProfile(User user, String password, String email) {
         String userEmail = user.getEmail();
 
-        boolean isEmailChanged = !email.equals(userEmail) || !userEmail.equals(email);
+        boolean isEmailChanged = !email.equals(userEmail);
 
         if (isEmailChanged) {
             user.setEmail(email);
@@ -129,7 +130,10 @@ public class UserService implements UserDetailsService, ApplicationListener<Auth
     @Override
     public void onApplicationEvent(AuthenticationSuccessEvent event) {
         String username = ((UserDetails) event.getAuthentication().getPrincipal()).getUsername();
-        User user = this.userRepo.findByUsername(username).get();
+
+        User user = userRepo.findByUsername(username).orElseThrow(() ->
+                new UsernameNotFoundException("User with username " + username + " is not exists"));
+
         user.setLastVisit(LocalDateTime.now());
     }
 }

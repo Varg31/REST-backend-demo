@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -39,9 +40,8 @@ public class TeacherService {
         newTeacher.setSurname(teacher.getSurname());
         newTeacher.setMiddleName(teacher.getMiddleName());
         newTeacher.setDateOfBirth(teacher.getDateOfBirth());
+        newTeacher.setEmploymentBookNumber(teacher.getEmploymentBookNumber());
         newTeacher.setGender(teacher.getGender());
-        newTeacher.setClasses(teacher.getClasses());
-        newTeacher.setDisciplines(teacher.getDisciplines());
 
         teacherRepo.save(newTeacher);
     }
@@ -63,15 +63,8 @@ public class TeacherService {
             throws NoSuchElementException, DisciplineAlreadyExists {
         Teacher teacher = teacherRepo.findById(teacherId).orElseThrow(() ->
                 new NoSuchElementException("No teacher with id: " + teacherId));
-        Discipline newDiscipline;
-        Long disciplineId;
 
-        try {
-            newDiscipline = disciplineService.findByTitle(discipline.getTitle());
-        } catch(NoSuchElementException ex) {
-            disciplineId = disciplineService.createDiscipline(discipline);
-            newDiscipline = disciplineService.getDisciplineById(disciplineId);
-        }
+        Discipline newDiscipline = disciplineService.createIfNotPresent(discipline);
 
         if (teacher.getDisciplines().contains(newDiscipline)) {
             throw new DisciplineAlreadyExists("Discipline with id: " + newDiscipline.getDsplId() + " already exists");
@@ -109,5 +102,23 @@ public class TeacherService {
                 new NoSuchElementException("No teacher with id: " + teacherId));
 
         return teacher.getClasses();
+    }
+
+    public Teacher findByEmploymentBookNumber(Integer number) throws NoSuchElementException {
+        return teacherRepo.findByEmploymentBookNumber(number).orElseThrow(() ->
+                new NoSuchElementException("No teacher with such employment book number: " + number));
+    }
+
+    Teacher createIfNotPresent(Teacher teacher) {
+        Optional<Teacher> optionalTeacher;
+        optionalTeacher = teacherRepo.findByEmploymentBookNumber(teacher.getEmploymentBookNumber());
+        Long teacherId;
+
+        if (!optionalTeacher.isPresent()) {
+            teacherId = this.createTeacher(teacher);
+            optionalTeacher = teacherRepo.findById(teacherId);
+        }
+
+        return optionalTeacher.get();
     }
 }

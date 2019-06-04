@@ -45,9 +45,7 @@ public class ClassController {
     public ResponseEntity<ClassDTO> getClass(@PathVariable Long id) {
         ClassEntity entity = classService.getClassById(id);
 
-
         ClassDTO classDTO = new ClassDTO(entity);
-        //Sentry.capture("Taken the class with id: " + id);
 
         return new ResponseEntity<>(classDTO, HttpStatus.OK);
     }
@@ -158,7 +156,7 @@ public class ClassController {
     }
 
     @GetMapping("/find")
-    public ResponseEntity<ClassDTO> findClassByTitle(@RequestParam String title) {
+    public ResponseEntity<ClassDTO> findClassByTitle(@RequestParam(required = false) String title) {
         ClassEntity resultClass = classService.findByTitle(title);
 
         ClassDTO classDTO = new ClassDTO(resultClass);

@@ -1,15 +1,14 @@
 package com.app.school.school_app.domain;
 
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "classes", schema = "institution")
+@Table(name = "classes", schema = "institution", indexes =
+        {@Index(name = "class_title_index", columnList = "title")})
 @EqualsAndHashCode(exclude = {"students", "disciplines", "teachers"})
 @Getter
 @Setter
@@ -38,28 +37,4 @@ public class ClassEntity {
             joinColumns = @JoinColumn(name = "classes_class_id", referencedColumnName = "class_id"),
             inverseJoinColumns = @JoinColumn(name = "teachers_teacher_id", referencedColumnName = "teacher_id"))
     private Set<Teacher> teachers = new HashSet<>();
-
-    public void setStudents(Set<Student> students) {
-        this.students.clear();
-
-        if (students != null) {
-            this.students.addAll(students);
-        }
-    }
-
-    public void setDisciplines(Set<Discipline> disciplines) {
-        this.disciplines.clear();
-
-        if (disciplines != null) {
-            this.disciplines.addAll(disciplines);
-        }
-    }
-
-    public void setTeachers(Set<Teacher> teachers) {
-        this.teachers.clear();
-
-        if (teachers != null) {
-            this.teachers.addAll(teachers);
-        }
-    }
 }

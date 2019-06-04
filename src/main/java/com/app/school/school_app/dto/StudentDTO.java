@@ -2,14 +2,16 @@ package com.app.school.school_app.dto;
 
 
 import com.app.school.school_app.controller.ClassController;
-import com.app.school.school_app.domain.ClassEntity;
+import com.app.school.school_app.domain.Gender;
 import com.app.school.school_app.domain.Student;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.lang.Nullable;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -34,20 +36,20 @@ public class StudentDTO extends ResourceSupport {
     }
 
     public Student toClass() {
-        Student student = new Student();
+        Student newStudent = new Student();
 
-        student.setName(this.getName());
-        student.setSurname(this.getSurname());
-        student.setMiddleName(this.getMiddleName());
-        student.setDateOfBirth(this.getDateOfBirth());
-        student.setGender(this.getGender());
-        //student.setClassEntity(this.getClassEntity());
+        newStudent.setName(getName());
+        newStudent.setSurname(getSurname());
+        newStudent.setMiddleName(getMiddleName());
+        newStudent.setDateOfBirth(getDateOfBirth());
+        newStudent.setStudentCardNumber(getStudentCardNumber());
+        newStudent.setGender(getGender());
 
-        return student;
+        return newStudent;
     }
 
     public Long getStudentId() {
-        return this.student.getStudentId();
+        return student.getStudentId();
     }
 
     @NotBlank(message = "Student name can`t be empty")
@@ -66,11 +68,17 @@ public class StudentDTO extends ResourceSupport {
     public String getDateOfBirth() { return student.getDateOfBirth(); }
     public void setDateOfBirth(String dateOfBirth) { student.setDateOfBirth(dateOfBirth);}
 
-    @NotBlank(message = "Student gender can`t be empty")
-    public String getGender() { return student.getGender(); }
-    public void setGender(String gender) { student.setGender(gender);}
+    @NotNull(message = "Student gender can`t be empty")
+    public Gender getGender() { return student.getGender(); }
+    public void setGender(Gender gender) { student.setGender(gender);}
 
-//    @Nullable
-//    public ClassEntity getClassEntity() { return student.getClassEntity(); }
-//    public void setClassEntity(ClassEntity classEntity) { student.setClassEntity(classEntity);}
+    @NotNull(message = "Student card number can`t be empty")
+    @Min(value = 8)
+    public Integer getStudentCardNumber() {
+        return student.getStudentCardNumber();
+   }
+
+   public void setStudentCardNumber(Integer number) {
+        student.setStudentCardNumber(number);
+   }
 }

@@ -17,5 +17,4 @@ public class LoggingEntity {
     @Column(length = 512)
     private String message;
     private LocalDateTime dateTime;
-
 }

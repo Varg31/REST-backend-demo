@@ -12,31 +12,49 @@ create table institution.disciplines
 );
 create table institution.students
 (
-    student_id    int8         not null,
-    date_of_birth varchar(255) not null,
-    gender        varchar(255) not null,
-    middle_name   varchar(255),
-    name          varchar(255) not null,
-    surname       varchar(255) not null,
-    class_id      int8,
+    student_id          int8         not null,
+    date_of_birth       varchar(255) not null,
+    gender              varchar(255) not null,
+    middle_name         varchar(255),
+    name                varchar(255) not null,
+    student_card_number int4         not null,
+    surname             varchar(255) not null,
+    class_id            int8,
     primary key (student_id)
 );
 create table institution.teachers
 (
-    id            int8         not null,
-    date_of_birth varchar(255),
-    gender        varchar(255) not null,
-    middle_name   varchar(255),
-    name          varchar(255) not null,
-    surname       varchar(255) not null,
-    primary key (id)
+    teacher_id             int8         not null,
+    date_of_birth          varchar(255) not null,
+    employment_book_number int4         not null,
+    gender                 varchar(255) not null,
+    middle_name            varchar(255),
+    name                   varchar(255) not null,
+    surname                varchar(255) not null,
+    primary key (teacher_id)
 );
+create index class_title_index on institution.classes (title);
+
 alter table if exists institution.classes
     add constraint UK_8ke3mjlqs2gv0k17gk9fsgw71 unique (title);
+
+create index discipline_title_index on institution.disciplines (title);
+
 alter table if exists institution.disciplines
     add constraint UK_g0baj7ugbunq7vth7ipk81kil unique (title);
 
+create index card_number_index on institution.students (student_card_number);
+
+alter table if exists institution.students
+    add constraint UK_eosd88rwo0xt0h13x5d85vmo7 unique (student_card_number);
+
+create index employment_number_index on institution.teachers (employment_book_number);
+
+alter table if exists institution.teachers
+    add constraint UK_skyls4cu8f28qd2a6hsbof452 unique (employment_book_number);
+
 create sequence hibernate_sequence start 1 increment 1;
+
 create table classes_has_disciplines
 (
     classes_class_id    int8 not null,

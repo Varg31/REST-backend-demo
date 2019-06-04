@@ -8,7 +8,8 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "teachers", schema = "institution")
+@Table(name = "teachers", schema = "institution", indexes =
+        {@Index(name = "employment_number_index", columnList = "employment_book_number")})
 @EqualsAndHashCode(exclude = {"disciplines", "classes"})
 @Getter
 @Setter
@@ -32,8 +33,12 @@ public class Teacher {
     @Column(name = "date_of_birth", nullable = false)
     private String dateOfBirth;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
-    private String gender;
+    private Gender gender;
+
+    @Column(name = "employment_book_number", nullable = false, unique = true)
+    private Integer employmentBookNumber;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "disciplines_has_teachers",

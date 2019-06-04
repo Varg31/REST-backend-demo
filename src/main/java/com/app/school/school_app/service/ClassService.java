@@ -44,9 +44,6 @@ public class ClassService {
                 new NoSuchElementException("No class with id: " + classId));
 
         newClass.setTitle(classEntity.getTitle());
-        newClass.setTeachers(classEntity.getTeachers());
-        newClass.setDisciplines(classEntity.getDisciplines());
-        newClass.setStudents(classEntity.getStudents());
 
         classRepo.save(newClass);
     }
@@ -57,7 +54,7 @@ public class ClassService {
     }
 
     public void deleteClassById(Long classId) throws NoSuchElementException {
-       ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
+        ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
                 new NoSuchElementException("No class with id: " + classId));
 
         classRepo.delete(classEntity);
@@ -68,8 +65,7 @@ public class ClassService {
         ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
                 new NoSuchElementException("No class with id: " + classId));
 
-        Long disciplineId = disciplineService.createDiscipline(discipline);
-        Discipline newDiscipline = disciplineService.getDisciplineById(disciplineId);
+        Discipline newDiscipline = disciplineService.createIfNotPresent(discipline);
 
         if (classEntity.getDisciplines().contains(discipline)) {
             throw new DisciplineAlreadyExists("Discipline with id: " + discipline.getDsplId() + " already exists");
@@ -104,20 +100,20 @@ public class ClassService {
             throws NoSuchElementException, StudentAlreadyExists {
         ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
                 new NoSuchElementException("No class with id: " + classId));
-        Long studentId = studentService.createStudent(student);
-        Student newStudent = studentService.getStudentById(studentId);
+
+        Student newStudent = studentService.createIfNotPresent(student);
 
         if (classEntity.getStudents().contains(newStudent)) {
             throw new StudentAlreadyExists("Student with id: " + newStudent.getStudentId() + " already exists");
         }
 
-        student.setClassEntity(classEntity);
+        newStudent.setClassEntity(classEntity);
 
-        classEntity.getStudents().add(student);
+        classEntity.getStudents().add(newStudent);
         classRepo.save(classEntity);
     }
 
-    public Set<Student> getStudentsByClassId(Long classId) throws NoSuchElementException    {
+    public Set<Student> getStudentsByClassId(Long classId) throws NoSuchElementException {
         ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
                 new NoSuchElementException("No class with id: " + classId));
 
@@ -147,15 +143,16 @@ public class ClassService {
             throws NoSuchElementException, TeacherAlreadyExists {
         ClassEntity classEntity = classRepo.findById(classId).orElseThrow(() ->
                 new NoSuchElementException("No class with id: " + classId));
-        Long teacherId = teacherService.createTeacher(teacher);
-        Teacher newTeacher = teacherService.getTeacherById(teacherId);
+
+        Teacher newTeacher = teacherService.createIfNotPresent(teacher);
 
         Set<Teacher> teachers = classEntity.getTeachers();
         Set<Discipline> disciplines = classEntity.getDisciplines();
 
         for (Discipline discipline: disciplines) {
             for (Teacher t: teachers) {
-                if (newTeacher.getDisciplines().contains(discipline) && !t.getDisciplines().contains(discipline)) {
+                if (newTeacher.getDisciplines().contains(discipline) &&
+                        (!t.getDisciplines().contains(discipline) || disciplines.isEmpty())) {
                     teachers.add(newTeacher);
                     newTeacher.getClasses().add(classEntity);
 
@@ -179,7 +176,7 @@ public class ClassService {
         teacher.getClasses().remove(classEntity);
     }
 
-    public ClassEntity findByTitle(String title) throws NoSuchElementException{
+    public ClassEntity findByTitle(String title) throws NoSuchElementException {
         return classRepo.findByTitle(title).orElseThrow(() ->
                 new NoSuchElementException("No class with such title: " + title));
     }

@@ -105,4 +105,13 @@ public class TeacherController {
 
         return new ResponseEntity<>(dtoList, HttpStatus.OK);
     }
+
+    @GetMapping("/find")
+    public ResponseEntity<TeacherDTO> findTeacherByEmploymentBook(@RequestParam Integer number) {
+        Teacher teacher = teacherService.findByEmploymentBookNumber(number);
+
+        TeacherDTO resultDTO = new TeacherDTO(teacher);
+
+        return new ResponseEntity<>(resultDTO, HttpStatus.OK);
+    }
 }
